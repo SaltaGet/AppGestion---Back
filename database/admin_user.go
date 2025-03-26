@@ -11,6 +11,7 @@ import(
 
 func CreateAdmin() error {
 	var err error
+	var exist bool
 	
 	err = godotenv.Load()
 	if err != nil {
@@ -19,9 +20,21 @@ func CreateAdmin() error {
 
 	db := GetDB()
 
+	query:= `SELECT EXISTS(SELECT 1 FROM clients WHERE cuit = ?)`
+
+	err = db.QueryRow(query, os.Getenv("CUIT_ADMIN"),).Scan(&exist)
+
+	if err != nil{
+		log.Fatalf("Error al obtener admin: %v", err)
+	}
+
+	if exist {
+		return nil
+	}
+
 	new_id := uuid.NewString()
 
-	query := `
+	query = `
 		INSERT INTO clients (id, email, cuit, name, password, cellphone, role, is_active, created_at, updated_at)
 		VALUES (?,?,?,?,?,?,?,?,?,?)
 	`

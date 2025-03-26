@@ -5,12 +5,16 @@ import (
 )
 
 func SetupRoutes(app *fiber.App) {
-	UserRoutes(app)
-	ProductRoutes(app)
-	StocksRoutes(app)
-	DiscontinuedRoutes(app)
-	SalesRoutes(app)
+	BuysRoutes(app)
+	CategoriesRoutes(app)
+	ClientsRoutes(app)
 	DailyMovementsRoutes(app)
+	DiscontinuedRoutes(app)
+	EntablishmentsRoutes(app)
+	ProductRoutes(app)
+	SalesRoutes(app)
+	StocksRoutes(app)
+	UserRoutes(app)
 }
 
 // type User struct {

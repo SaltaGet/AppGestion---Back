@@ -1,11 +1,11 @@
 package services
 
 import (
-	db "api-stock/database"
-	m "api-stock/models"
 	"api-stock/utils"
 	"os"
 	"time"
+	m "api-stock/models"
+	db "api-stock/database"
 	"github.com/gofiber/fiber/v2"
 )
 

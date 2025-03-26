@@ -23,7 +23,7 @@ func CreateClient(c *fiber.Ctx) error {
 
 	status, message, err := s.CreateClient(&client)
 
-	if err != nil{
+	if status > 299 || err != nil{
 		return c.Status(status).JSON(m.Response{
 			Status:  false,
 			Body:    nil,
@@ -33,7 +33,7 @@ func CreateClient(c *fiber.Ctx) error {
 
 	return c.Status(status).JSON(m.Response{
 		Status:  true,
-		Body:    message,
+		Body:    map[string]string{"client_id": message},
 		Message: "Cliente creado con éxito",
 	})
 }

@@ -4,23 +4,24 @@ import (
 	"time"
 )
 
-type RoleUser int
+type RoleClient int
 
 const (
-	Admin RoleUser = iota
+	Admin RoleClient = iota
 	Property
 	Employee
 )
 
 type Client struct {
-	Id        string    `json:"id"`
-	Userame   string    `json:"username"`
-	CUIL      string    `json:"cuil"`
-	FirstName string    `json:"first_name"`
-	LastName  string    `json:"last_name"`
-	Cellphone string    `json:"cellphone"`
-	Password  string    `json:"password"`
-	Role      RoleUser  `json:"role"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	Id        string     `json:"id"`
+	Email     string     `json:"email"`
+	CUIT      string     `json:"cuit"`
+	Name      string     `json:"name"`
+	Password  string     `json:"password"`
+	Cellphone string     `json:"cellphone"`
+	Role      RoleClient `json:"role"`
+	IsActive  bool       `json:"is_active"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
+	Branches  []Establishment   `json:"branches"`
 }

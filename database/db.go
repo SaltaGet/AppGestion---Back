@@ -17,7 +17,7 @@ func InitDB() error {
 	
 	err = godotenv.Load()
 	if err != nil {
-		log.Fatal("❌ Error cargando el archivo .env")
+		log.Fatalf("Error cargando el archivo .env: %v", err)
 	}
 
 	dsn := os.Getenv("URI_DB")
@@ -33,6 +33,8 @@ func InitDB() error {
 	}
 
 	CreateTables(db)
+
+  CreateAdmin()
 	
 	return nil
 }
@@ -48,37 +50,6 @@ func CloseDB() error {
 // GetDB retorna la conexión a la base de datos
 func GetDB() *sql.DB {
 	return db
-}
-
-func CreateTables(db *sql.DB) error {
-	var err error
-	
-	_, err = db.Exec(`
-		CREATE TABLE IF NOT EXISTS users (
-			id INT AUTO_INCREMENT PRIMARY KEY,
-			name VARCHAR(100) NOT NULL,
-			email VARCHAR(100) UNIQUE NOT NULL
-		);
-
-		CREATE TABLE IF NOT EXISTS products (
-			id INT AUTO_INCREMENT PRIMARY KEY,
-			name VARCHAR(100) NOT NULL,
-			price DECIMAL(10,2) NOT NULL
-		);
-
-		CREATE TABLE IF NOT EXISTS orders (
-			id INT AUTO_INCREMENT PRIMARY KEY,
-			user_id INT NOT NULL,
-			total DECIMAL(10,2) NOT NULL,
-			FOREIGN KEY (user_id) REFERENCES users(id)
-		);
-	`)
-
-	if err != nil{
-		log.Fatal("Error al crear las tablas")
-	}
-
-	return nil
 }
 
 // // MYSQL
@@ -125,3 +96,81 @@ func CreateTables(db *sql.DB) error {
 // func GetDB() *sql.DB {
 // 	return db
 // }
+
+
+
+// tables de las DB
+
+// CREATE TABLE IF NOT EXISTS Buy (
+//     id TEXT PRIMARY KEY,
+//     date DATETIME NOT NULL,
+//     data TEXT NOT NULL CHECK (length(data) <= 1000000)
+// );
+
+// CREATE TABLE IF NOT EXISTS Category (
+//     id TEXT PRIMARY KEY,
+//     name TEXT NOT NULL
+// );
+
+// CREATE TABLE IF NOT EXISTS DailyMovement (
+//     id TEXT PRIMARY KEY,
+//     product_id TEXT NOT NULL,
+//     created_at DATETIME NOT NULL,
+//     updated_at DATETIME NOT NULL,
+//     cost REAL NOT NULL,
+//     price REAL NOT NULL,
+//     movement INTEGER NOT NULL,
+//     FOREIGN KEY (product_id) REFERENCES Product(id)
+// );
+
+// CREATE TABLE IF NOT EXISTS Product (
+//     id TEXT PRIMARY KEY,
+//     sku TEXT NOT NULL,
+//     name TEXT NOT NULL,
+//     unit_measure INTEGER NOT NULL,
+//     category_id TEXT NOT NULL,
+//     cost REAL NOT NULL,
+//     price REAL NOT NULL,
+//     date_from DATETIME NOT NULL,
+//     date_to DATETIME NOT NULL,
+//     created_at DATETIME NOT NULL,
+//     updated_at DATETIME NOT NULL,
+//     FOREIGN KEY (category_id) REFERENCES Category(id)
+// );
+
+// CREATE TABLE IF NOT EXISTS ProductPriceHistory (
+//     id TEXT PRIMARY KEY,
+//     data TEXT NOT NULL CHECK (length(data) <= 1000000)
+// );
+
+// CREATE TABLE IF NOT EXISTS Sale (
+//     id TEXT PRIMARY KEY,
+//     date DATETIME NOT NULL,
+//     data TEXT NOT NULL CHECK (length(data) <= 1000000)
+// );
+
+// CREATE TABLE IF NOT EXISTS Discontinued (
+//     id TEXT PRIMARY KEY,
+//     date DATETIME NOT NULL,
+//     data TEXT NOT NULL CHECK (length(data) <= 1000000)
+// );
+
+// CREATE TABLE IF NOT EXISTS Stock (
+//     id TEXT PRIMARY KEY,
+//     product_id TEXT NOT NULL,
+//     stock REAL NOT NULL,
+//     FOREIGN KEY (product_id) REFERENCES Product(id)
+// );
+
+// CREATE TABLE IF NOT EXISTS User (
+//     id TEXT PRIMARY KEY,
+//     username TEXT NOT NULL,
+//     first_name TEXT NOT NULL,
+//     last_name TEXT NOT NULL,
+//     cellphone TEXT NOT NULL,
+//     email TEXT NOT NULL,
+//     password TEXT NOT NULL,
+//     created_at DATETIME NOT NULL,
+//     updated_at DATETIME NOT NULL,
+//     is_active BOOLEAN NOT NULL
+// );

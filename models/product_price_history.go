@@ -2,11 +2,9 @@ package models
 
 import (
 	"encoding/json"
-	"time"
 )
 
-type Buy struct {
+type ProductPriceHistory struct {
 	Id   string          `json:"id"`
-	Date time.Time       `json:"date"`
 	Data json.RawMessage `json:"data"`
 }

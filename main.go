@@ -4,6 +4,7 @@ import (
 	"log"
 	"api-stock/routes"
 	"api-stock/database"
+	mdw "api-stock/middleware"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -15,15 +16,11 @@ func main() {
 
 	app := fiber.New()
 
-	app.Use(logginMiddleware)
+	app.Use(mdw.LogginMiddleware)
+	// app.Use(mdw.JWTProtected)
 
 	routes.SetupRoutes(app)
 
 	log.Fatal(app.Listen(":3000"))
 }
 
-func logginMiddleware(c *fiber.Ctx) error {
-	log.Printf("Resquest: %s %s", c.Method(), c.Path())
-
-	return c.Next()
-}

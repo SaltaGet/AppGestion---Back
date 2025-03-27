@@ -3,13 +3,15 @@ package routes
 import (
 	"github.com/gofiber/fiber/v2"
 	ctrl "api-stock/controllers"
+	mdw "api-stock/middleware"
 )
 
 func ClientsRoutes(app *fiber.App) {
 	users := app.Group("/clients")
-	users.Get("/", getClients)       // GET /users
-	users.Get("/:id", getClientById) // GET /users/:id
-	users.Post("/", ctrl.CreateClient)    // POST /users
+	users.Get("/", getClients)    
+	users.Get("/:id", getClientById)
+	users.Post("/", mdw.JWTProtected, ctrl.CreateClient) 
+	users.Post("/login", ctrl.ClientLogin)   
 }
 
 func getClients(c *fiber.Ctx) error       { return c.SendString("Lista de usuarios") }

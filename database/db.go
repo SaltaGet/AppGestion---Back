@@ -21,7 +21,6 @@ func InitDB() error {
 	}
 
 	dsn := os.Getenv("URI_DB")
-	fmt.Println(dsn)
 	
 	db, err = sql.Open("sqlite3", dsn)
 	if err != nil {

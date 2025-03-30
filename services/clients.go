@@ -36,7 +36,7 @@ func LoginClient(clientLogin *cl.ClientLogin) (int, string, error) {
 		return 404, "Credenciales incorrectas", nil
 	}
 
-	token, err := utils.GenerateToken(&client)
+	token, err := utils.GenerateClientToken(&client)
 
 	if err != nil {
 		return 500, "Error al intentar generar el token", err

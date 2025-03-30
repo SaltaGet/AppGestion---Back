@@ -6,7 +6,6 @@ import (
 	"os"
 	"log"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/joho/godotenv"
 	_ "github.com/mattn/go-sqlite3" 
 )
 
@@ -14,11 +13,6 @@ var db *sql.DB
 
 func InitDB() error {
 	var err error
-	
-	err = godotenv.Load()
-	if err != nil {
-		log.Fatalf("Error cargando el archivo .env: %v", err)
-	}
 
 	dsn := os.Getenv("URI_DB")
 	
@@ -31,9 +25,8 @@ func InitDB() error {
 		return fmt.Errorf("error al conectar con la base de datos: %w", err)
 	}
 
-	CreateTables(db)
+	CreatePrincipalTables()
 
-  CreateAdmin()
 	
 	return nil
 }
@@ -51,14 +44,79 @@ func GetDB() *sql.DB {
 	return db
 }
 
+func ExecuteTransaction(query string, args ...interface{}) error {
+	tx, err := db.Begin()
+	if err != nil {
+			log.Printf("Error starting transaction: %v", err)
+			return err
+	}
+
+	_, err = tx.Exec(query, args...) // Acepta argumentos para consultas parametrizadas
+	if err != nil {
+			log.Printf("Error executing query: %v", err)
+			tx.Rollback()
+			return err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+			log.Printf("Error committing transaction: %v", err)
+			return err
+	}
+
+	return nil
+}
+
+func ExecuteGroupTransactions(queries []string, args [][]interface{}) error {
+	tx, err := db.Begin()
+	if err != nil {
+					log.Printf("Error starting transaction: %v", err)
+					return err
+	}
+
+	for i, query := range queries {
+					_, err := tx.Exec(query, args[i]...)
+					if err != nil {
+									log.Printf("Error executing query: %v", err)
+									tx.Rollback()
+									return err
+					}
+	}
+
+	err = tx.Commit()
+	if err != nil {
+					log.Printf("Error committing transaction: %v", err)
+					return err
+	}
+
+	return nil
+}
+
+func GetRow(query string, args ...interface{}) (*sql.Row, error) {
+	row := db.QueryRow(query, args...)
+
+	if err := row.Err(); err != nil{
+		log.Printf("Error executing QueryRow: %v", err)
+		return nil, err
+	}
+
+	return row, nil
+}
+
+func GetRows(query string, args ...interface{}) (*sql.Rows, error) {
+	rows, err := db.Query(query, args...)
+
+	if err != nil {
+		log.Printf("Error executing query: %v", err)
+		return nil, err
+	}
+
+	return rows, nil
+}
+
 // // MYSQL
 // func InitDB() error {
 // 	var err error
-	
-// 	err = godotenv.Load()
-// 	if err != nil {
-// 		log.Fatal("❌ Error cargando el archivo .env")
-// 	}
 
 // 	dsn := os.Getenv("URI_DB")
 // 	fmt.Println(dsn)

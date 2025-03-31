@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	cl "api-stock/models/client"
+	cl "api-stock/models/entity"
 	m "api-stock/models"
 	s "api-stock/services"
 

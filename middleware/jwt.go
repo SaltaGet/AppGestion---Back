@@ -1,12 +1,12 @@
 package middleware
 
-import (
-	"os"
-	"fmt"
-	"github.com/gofiber/fiber/v2"
+// import (
+// 	"os"
+// 	"fmt"
+// 	"github.com/gofiber/fiber/v2"
 
-	jwtware "github.com/gofiber/contrib/jwt"
-)
+// 	jwtware "github.com/gofiber/contrib/jwt"
+// )
 
 // func JWTClientProtected(c *fiber.Ctx) error {
 // 	return jwtware.New(jwtware.Config{
@@ -80,79 +80,79 @@ import (
 // 	}
 // }
 
-func JWTMultiProtected(requiredTokens ...string) fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		fmt.Println("Verificando token...")
+// func JWTMultiProtected(requiredTokens ...string) fiber.Handler {
+// 	return func(c *fiber.Ctx) error {
+// 		fmt.Println("Verificando token...")
 
-		tokenConfigs := map[string]string{
-			"client": os.Getenv("SECRET_CLIENT_KEY"),
-			"user":   os.Getenv("SECRET_USER_KEY"),
-			"tenant": os.Getenv("SECRET_TENANT_KEY"),
-		}
-		headerNames := map[string]string{
-			"client": "X-Client-Token",
-			"user":   "X-User-Token",
-			"tenant": "X-Tenant-Token",
-		}
+// 		tokenConfigs := map[string]string{
+// 			"client": os.Getenv("SECRET_CLIENT_KEY"),
+// 			"user":   os.Getenv("SECRET_USER_KEY"),
+// 			"tenant": os.Getenv("SECRET_TENANT_KEY"),
+// 		}
+// 		headerNames := map[string]string{
+// 			"client": "X-Client-Token",
+// 			"user":   "X-User-Token",
+// 			"tenant": "X-Tenant-Token",
+// 		}
 
-		var userID string
+// 		var userID string
 
-		// Verificar cada token requerido
-		for _, tokenType := range requiredTokens {
-			secretKey, exists := tokenConfigs[tokenType]
-			if !exists || secretKey == "" {
-				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-					"error": true,
-					"msg":   "Invalid or missing token type: " + tokenType,
-				})
-			}
+// 		// Verificar cada token requerido
+// 		for _, tokenType := range requiredTokens {
+// 			secretKey, exists := tokenConfigs[tokenType]
+// 			if !exists || secretKey == "" {
+// 				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+// 					"error": true,
+// 					"msg":   "Invalid or missing token type: " + tokenType,
+// 				})
+// 			}
 
-			tokenHeader := headerNames[tokenType]
-			tokenString := c.Get(tokenHeader)
+// 			tokenHeader := headerNames[tokenType]
+// 			tokenString := c.Get(tokenHeader)
 
-			if tokenString == "" {
-				return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-					"error": true,
-					"msg":   "Missing " + tokenType + " token",
-				})
-			}
+// 			if tokenString == "" {
+// 				return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+// 					"error": true,
+// 					"msg":   "Missing " + tokenType + " token",
+// 				})
+// 			}
 
-			// Parsear el token
-			token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-				return []byte(secretKey), nil
-			})
+// 			// Parsear el token
+// 			token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+// 				return []byte(secretKey), nil
+// 			})
 
-			if err != nil || !token.Valid {
-				return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-					"error": true,
-					"msg":   "Invalid " + tokenType + " token",
-				})
-			}
+// 			if err != nil || !token.Valid {
+// 				return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+// 					"error": true,
+// 					"msg":   "Invalid " + tokenType + " token",
+// 				})
+// 			}
 
-			// Extraer userID del token
-			if claims, ok := token.Claims.(jwt.MapClaims); ok {
-				if id, exists := claims["user_id"].(string); exists {
-					userID = id
-				}
-			}
-		}
+// 			// Extraer userID del token
+// 			if claims, ok := token.Claims.(jwt.MapClaims); ok {
+// 				if id, exists := claims["user_id"].(string); exists {
+// 					userID = id
+// 				}
+// 			}
+// 		}
 
-		// Verificar el usuario en la base de datos
-		var user models.User
-		result := database.DB.Where("id = ?", userID).First(&user)
-		if result.Error != nil {
-			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-				"error": true,
-				"msg":   "User not found",
-			})
-		}
+// 		// Verificar el usuario en la base de datos
+// 		var user models.User
+// 		result := database.DB.Where("id = ?", userID).First(&user)
+// 		if result.Error != nil {
+// 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+// 				"error": true,
+// 				"msg":   "User not found",
+// 			})
+// 		}
 
-		// Almacenar el usuario completo en el contexto
-		c.Locals("user", user)
+// 		// Almacenar el usuario completo en el contexto
+// 		c.Locals("user", user)
 
-		return c.Next()
-	}
-}
+// 		return c.Next()
+// 	}
+// }
 
 // func JWTMultiProtected(requiredTokens ...string) fiber.Handler {
 // 	return func(c *fiber.Ctx) error {

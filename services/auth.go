@@ -2,24 +2,34 @@ package services
 
 import(
 	"api-stock/database"
-	// "api-stock/models/client"
+	u "api-stock/models/user"
 )
 
-func GetCurrentClient(clientId string) (*cl.Client, error){
-	db := database.GetDB()
+func GetCurrentUser(userId string) (*u.User, error){
+	query := `
+		SELECT 
+			u.id, u.first_name, u.last_name, u.email, u.identifier, 
+			u.phone, u.address, u.city, u.country, u.zip_code, 
+			u.password, u.created, u.updated, r.id, r.name, r.hierarchy
+		FROM users u
+		JOIN entity_user eu ON u.id = eu.user_id
+		JOIN roles r ON eu.entity_id = r.entity_id
+		WHERE u.id = ?
+	`
 
-	query := `SELECT * FROM clients WHERE id = ?`
+	row :=database.GetRow(query, userId)
 
-	row := db.QueryRow(query, clientId,)
+	var user u.User
+	err := row.Scan(
+		&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.Identifier,
+		&user.Phone, &user.Address, &user.City, &user.Country, &user.ZipCode,
+		&user.Password, &user.Created, &user.Updated,
+		&user.Role.Id, &user.Role.Name, &user.Role.Hierarchy,
+	)
 
-	var client cl.Client
-
-	err := row.Scan(&client.Id, &client.Email, &client.CUIT, &client.Name,
-		&client.Password, &client.Cellphone, &client.Role, &client.IsActive, &client.CreatedAt, &client.UpdatedAt)
-	
 	if err != nil {
-		return nil, err
+    return nil, err
 	}
 
-	return &client, nil
+	return &user, nil
 }

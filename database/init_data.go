@@ -1,7 +1,6 @@
 package database
 
 import (
-	ent "api-stock/models/entity"
 	"api-stock/utils"
 	"github.com/google/uuid"
 	"log"
@@ -9,7 +8,7 @@ import (
 	"time"
 )
 
-func createRoles() error {
+func CreateRoles() error {
 	queries := []string{}
 	args := [][]interface{}{}
 
@@ -24,7 +23,7 @@ func createRoles() error {
 
 	for role, hierarchy := range initRoles {
 		newId := uuid.NewString()
-		query := `INSERT INTO roles (id, name, hierarchy) VALUES (?, ?, ?);`
+		query := `INSERT OR IGNORE INTO roles (id, name, hierarchy) VALUES (?, ?, ?);`
 		queries = append(queries, query)
 		args = append(args, []interface{}{newId, role, hierarchy})
 	}
@@ -35,40 +34,27 @@ func createRoles() error {
 	}
 
 	return nil
-
 }
 
-func createAdmin() error {
-	query := `SELECT * FROM entities WHERE cuit = ?)`
+func CreateAdmin() error {
+	query := `SELECT id, cuit FROM entities WHERE cuit = ?`
 
-	row, err := GetRow(query, os.Getenv("CUIT_ADMIN"))
+	row := GetRow(query, os.Getenv("CUIT_ADMIN"))
 
-	if err != nil {
-		log.Fatalf("Error al obtener admin: %v", err)
-	}
+	var entId, entCuit string
+	_ = row.Scan(&entId, &entCuit)
 
-	var entity ent.Entity
-	err = row.Scan(&entity)
-
-	if err != nil {
-		log.Fatalf("Error al obtener entity: %v", err)
-	}
-
-	if entity.CUIT != "" {
+	if entCuit != "" {
 		return nil
 	}
 
 	query = `SELECT id FROM roles WHERE name = ?`
-	row, err = GetRow(query, "ADMIN")
-
-	if err != nil {
-		log.Fatalf("Error al obtener role: %v", err)
-	}
+	row = GetRow(query, "ADMIN")
 
 	var roleId string
-	err = row.Scan(&roleId)
+	err := row.Scan(&roleId)
 
-	if roleId == "" {
+	if roleId == "" || err != nil{
 		log.Fatalf("Error al obtener rol de admin")
 	}
 
@@ -84,7 +70,7 @@ func createAdmin() error {
 	entityUserId := uuid.NewString()
 	queries := []string{}
 	args := [][]interface{}{}
-
+	
 	emailAdmin := os.Getenv("EMAIL_ADMIN")
 	cuitAdmin := os.Getenv("CUIT_ADMIN")
 	nameAdmin := os.Getenv("NAME_ADMIN")

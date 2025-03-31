@@ -2,7 +2,7 @@ package services
 
 import (
 	db "api-stock/database"
-	cl "api-stock/models/client"
+	ent "api-stock/models/entity"
 	"api-stock/utils"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -12,17 +12,17 @@ import (
 	"errors"
 )
 
-func LoginClient(clientLogin *cl.ClientLogin) (int, string, error) {
+func LoginClient(clientLogin *ent.ClientLogin) (int, string, error) {
 	db := db.GetDB()
 
 	query := `SELECT * FROM clients WHERE cuit = ?`
 
 	row := db.QueryRow(query, clientLogin.CUIT)
 
-	var client cl.Client
+	var client ent.Entity
 
 	err := row.Scan(&client.Id, &client.Email, &client.CUIT, &client.Name,
-		&client.Password, &client.Cellphone, &client.Role, &client.IsActive, &client.CreatedAt, &client.UpdatedAt)
+		&client.Phone, &client.Role, &client.IsActive, &client.Created, &client.Updated)
 
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -32,21 +32,22 @@ func LoginClient(clientLogin *cl.ClientLogin) (int, string, error) {
 		return 500, "Error al obtener usuario para el login", err
 	}
 
-	if !utils.CheckPasswordHash(clientLogin.Password, client.Password) {
-		return 404, "Credenciales incorrectas", nil
-	}
+	// if !utils.CheckPasswordHash(clientLogin.Password, client.Password) {
+	// 	return 404, "Credenciales incorrectas", nil
+	// }
 
-	token, err := utils.GenerateClientToken(&client)
+	// token, err := utils.GenerateClientToken(&client)
 
-	if err != nil {
-		return 500, "Error al intentar generar el token", err
-	}
+	// if err != nil {
+	// 	return 500, "Error al intentar generar el token", err
+	// }
 
-	return 200, token, nil
+	// return 200, token, nil
+	return 200, "", nil
 
 }
 
-func CreateClient(client *cl.ClientCreate) (int, string, error) {
+func CreateClient(client *ent.ClientCreate) (int, string, error) {
 	db := db.GetDB()
 
 	exist, err := GetClientByCUIT(client.CUIT)
@@ -59,7 +60,7 @@ func CreateClient(client *cl.ClientCreate) (int, string, error) {
 		return fiber.StatusBadRequest, "El cliente ya existe", err
 	}
 
-	query := `INSERT INTO clients (id, email, cuit, name, password, cellphone, created_at, updated_at)
+	query := `INSERT INTO clients (id, email, cuit, name, password, phone, created_at, updated_at)
 		VALUES (?,?,?,?,?,?,?,?)`
 
 	newId := uuid.NewString()

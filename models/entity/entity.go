@@ -1,7 +1,8 @@
 package entity
 
 import (
-	// es "api-stock/models/establishment"
+	est "api-stock/models/establishment"
+	r "api-stock/models/role"
 	"time"
 )
 
@@ -14,18 +15,19 @@ const (
 )
 
 type Entity struct {
-	Id              string             `json:"id"`
-	Email           string             `json:"email"`
-	CUIT            string             `json:"cuit"`
-	Name            string             `json:"name"`
-	Phone           string             `json:"phone"`
-	StartActitivies time.Time          `json:"start_activities"`
-	Address         string             `json:"address"`
-	City            string             `json:"city"`
-	Country         string             `json:"country"`
-	ZipCode         string             `json:"zip_code"`
-	IsActive        bool               `json:"is_active"`
-	CreatedAt       time.Time          `json:"created_at"`
-	UpdatedAt       time.Time          `json:"updated_at"`
-	// Establishments  []es.Establishment `json:"establishments"`
+	Id              string              `json:"id"`
+	Email           string              `json:"email"`
+	CUIT            string              `json:"cuit"`
+	Name            string              `json:"name"`
+	Phone           string              `json:"phone"`
+	StartActitivies time.Time           `json:"start_activities"`
+	Address         string              `json:"address"`
+	City            string              `json:"city"`
+	Country         string              `json:"country"`
+	ZipCode         string              `json:"zip_code"`
+	IsActive        bool                `json:"is_active"`
+	Created         time.Time           `json:"created"`
+	Updated         time.Time           `json:"updated"`
+	Establishments  []est.Establishment `json:"establishments"`
+	Role            r.Role              `json:"role"`
 }

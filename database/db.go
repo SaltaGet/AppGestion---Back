@@ -26,7 +26,8 @@ func InitDB() error {
 	}
 
 	CreatePrincipalTables()
-
+	CreateRoles()
+	CreateAdmin()
 	
 	return nil
 }
@@ -92,15 +93,9 @@ func ExecuteGroupTransactions(queries []string, args [][]interface{}) error {
 	return nil
 }
 
-func GetRow(query string, args ...interface{}) (*sql.Row, error) {
+func GetRow(query string, args ...interface{}) *sql.Row  {
 	row := db.QueryRow(query, args...)
-
-	if err := row.Err(); err != nil{
-		log.Printf("Error executing QueryRow: %v", err)
-		return nil, err
-	}
-
-	return row, nil
+	return row
 }
 
 func GetRows(query string, args ...interface{}) (*sql.Rows, error) {

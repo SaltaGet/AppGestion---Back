@@ -6,6 +6,7 @@ import (
 )
 
 func SetupRoutes(app *fiber.App, appDependencies *dep.Application) {
+	AuthRoutes(app, appDependencies.AuthController)
 	BuysRoutes(app)
 	CategoriesRoutes(app)
 	EntitiesRoutes(app, appDependencies.EntityController)

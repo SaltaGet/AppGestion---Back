@@ -75,6 +75,10 @@ func (s Service) Create(entity *ent.EntityCreate) (string, error) {
 	return newId, nil
 }
 
+func (s Service) Update(entity *ent.EntityUpdate) error {
+	return nil
+}
+
 func GetClientByCUIT(id string) (bool, error) {
 	// var exist bool
 

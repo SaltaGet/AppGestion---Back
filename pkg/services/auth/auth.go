@@ -1,5 +1,20 @@
 package auth
 
+import (
+	"api-stock/pkg/models/auth"
+	"fmt"
+)
+
+func (s *Service) Login(credentials *auth.AuthLogin) (string, error) {
+	user, err := s.AuthRepository.Login(credentials)
+
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("token valido: %s", user.Id), nil
+}
+
 // import(
 // 	"api-stock/database"
 // 	u "api-stock/core/models/user"

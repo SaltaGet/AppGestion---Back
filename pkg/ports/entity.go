@@ -6,8 +6,10 @@ import(
 
 type EntityService interface {
 	Create(entity *ent.EntityCreate) (id string, err error)
+	Update(entity *ent.EntityUpdate) (err error)
 }
 
 type EntityRepository interface {
 	Insert(entity *ent.EntityCreate) (id string, err error)
+	Update(entity *ent.EntityUpdate) (err error)
 }

@@ -2,51 +2,30 @@ package utils
 
 import (
 	"os"
-	// cl "api-stock/models/client"
+	"api-stock/pkg/models/user"
 	"github.com/golang-jwt/jwt/v5"
 )
 
-// func GenerateClientToken(client *cl.Client) (string, error) {
-// 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-// 		"cuit": client.CUIT,
-// 	})
+func GenerateUserToken(user *user.User) (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"id": user.Id,
+		"first_name": user.FirstName,
+		"last_name": user.LastName,
+		"email": user.Email,
+		"identifier": user.Identifier,
+	})
 
-// 	t, err := token.SignedString([]byte(os.Getenv("SECRET_CLIENT_KEY")))
-// 	if err != nil {
-// 		return "", err
-// 	}
+	t, err := token.SignedString([]byte(os.Getenv("SECRET_KEY")))
+	if err != nil {
+		return "", err
+	}
 
-// 	return t, nil
-// }
-
-// func GenerateUserToken(client *cl.Client) (string, error) {
-// 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-// 		"cuit": client.CUIT,
-// 	})
-
-// 	t, err := token.SignedString([]byte(os.Getenv("SECRET_USER_KEY")))
-// 	if err != nil {
-// 		return "", err
-// 	}
-
-// 	return t, nil
-// }
-
+	return t, nil
+}
 
 func VerifyClientToken(tokenString string) (bool, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		return []byte(os.Getenv("SECRET_CLIENT_KEY")), nil
-	})
-	if err != nil {
-		return false, err
-	}
-
-	return token.Valid, nil
-}
-
-func VerifyUserToken(tokenString string) (bool, error) {
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		return []byte(os.Getenv("SECRET_USER_KEY")), nil
+		return []byte(os.Getenv("SECRET_KEY")), nil
 	})
 	if err != nil {
 		return false, err

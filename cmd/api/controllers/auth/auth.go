@@ -8,19 +8,31 @@ import (
 )
 
 func (ctrl Controller) Login(c *fiber.Ctx) error {
-	id, err := ctrl.AuthService.Login(&auth.AuthLogin{Identifier: "00000000", Password: "Qwer1234*"})
+	var authLogin auth.AuthLogin
+
+	err := c.BodyParser(&authLogin)
 
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(resp.Response{
 			Status:  false,
 			Body:    nil,
-			Message: "Error al crear cliente",
+			Message: "Error al realizar login",
 		})
 	}
 
-	return c.Status(fiber.StatusOK).JSON(resp.Response{
+	token, code,  err := ctrl.AuthService.Login(&authLogin)
+
+	if err != nil {
+		return c.Status(code).JSON(resp.Response{
+			Status:  false,
+			Body:    nil,
+			Message: token,
+		})
+	}
+
+	return c.Status(code).JSON(resp.Response{
 		Status:  true,
-		Body:    id,
-		Message: id,
+		Body:    token,
+		Message: "Token obtenido con éxito",
 	})
 }

@@ -1,25 +1,23 @@
 package middleware
 
-// import (
-// 	"os"
-// 	"fmt"
-// 	"github.com/gofiber/fiber/v2"
+import (
+	"os"
+	"github.com/gofiber/fiber/v2"
+	jwtware "github.com/gofiber/contrib/jwt"
+)
 
-// 	jwtware "github.com/gofiber/contrib/jwt"
-// )
-
-// func JWTClientProtected(c *fiber.Ctx) error {
-// 	return jwtware.New(jwtware.Config{
-// 		SigningKey: jwtware.SigningKey{Key: []byte(os.Getenv("SECRET_CLIENT_KEY"))},
-// 		TokenLookup: "header:X-Client-Token",
-// 		ErrorHandler: func(c *fiber.Ctx, err error) error {
-// 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-// 				"error": true,
-// 				"msg":   err.Error(),
-// 			})
-// 		},
-// 	})(c)
-// }
+func JWTProtected(c *fiber.Ctx) error {
+	return jwtware.New(jwtware.Config{
+		SigningKey: jwtware.SigningKey{Key: []byte(os.Getenv("SECRET_KEY"))},
+		TokenLookup: "header:X-Client-Token",
+		ErrorHandler: func(c *fiber.Ctx, err error) error {
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"error": true,
+				"msg":   err.Error(),
+			})
+		},
+	})(c)
+}
 
 // func JWTUserProtected(c *fiber.Ctx) error {
 // 	return jwtware.New(jwtware.Config{

@@ -6,7 +6,7 @@ import (
 )
 
 type AuthService interface {
-	Login(credentials *auth.AuthLogin) (id string, err error)
+	Login(credentials *auth.AuthLogin) (id string, code int, err error)
 }
 
 type AuthRepository interface {

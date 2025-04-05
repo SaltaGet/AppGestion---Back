@@ -2,17 +2,30 @@ package auth
 
 import (
 	"api-stock/pkg/models/auth"
-	"fmt"
+	"api-stock/pkg/utils"
 )
 
-func (s *Service) Login(credentials *auth.AuthLogin) (string, error) {
-	user, err := s.AuthRepository.Login(credentials)
+func (s *Service) Login(credentials *auth.AuthLogin) (string, int, error) {
+	user, err := s.UserRepository.GetByIdentifier(credentials.Identifier)
 
 	if err != nil {
-		return "", err
+		return "Error al intentar conseguir el usuario", 500, err
 	}
 
-	return fmt.Sprintf("token valido: %s", user.Id), nil
+	if user == nil {
+		return "Usuario no encontrado", 404 ,err
+	}
+
+	if !utils.CheckPasswordHash(credentials.Password, user.Password) {
+		return "Credenciales incorrecta", 401, err
+	}
+
+	token, err := utils.GenerateUserToken(user)
+	if err != nil {
+		return "Error al generar el token", 500, err
+	}
+
+	return token, 200, nil
 }
 
 // import(

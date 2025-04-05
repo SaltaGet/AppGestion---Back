@@ -27,7 +27,7 @@ func NewApplication(db *sql.DB) *Application {
 	userServ := &userServ.Service{UserRepository: userRepo}
 
 	authRepo := &authRep.Repository{DB: db,}
-	authServ := &authServ.Service{AuthRepository: authRepo}
+	authServ := &authServ.Service{AuthRepository: authRepo, UserRepository: userRepo}
 	
 	return &Application{
 		EntityController: &entCtrl.Controller{EntityService: entityServ},

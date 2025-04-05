@@ -6,4 +6,5 @@ import (
 
 type Service struct {
 	AuthRepository ports.AuthRepository	
+	UserRepository ports.UserRepository
 }

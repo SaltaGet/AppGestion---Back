@@ -1,13 +1,13 @@
 package middleware
 
 // import (
-// 	"api-stock/models/client"
+// 	"api-stock/pkg/models/user"
 // 	"github.com/gofiber/fiber/v2"
 // )
 
 // func RequireRole(allowedRoles ...string) fiber.Handler {
 // 	return func(c *fiber.Ctx) error {
-// 		user, ok := c.Locals("user").(models.User)
+// 		user, ok := c.Locals("user").(user.User)
 // 		if !ok {
 // 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 // 				"error": "No autorizado",

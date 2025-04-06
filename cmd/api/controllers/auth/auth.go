@@ -10,27 +10,40 @@ import (
 func (ctrl Controller) Login(c *fiber.Ctx) error {
 	var authLogin auth.AuthLogin
 
-	err := c.BodyParser(&authLogin)
-
-	if err != nil {
+	if err := c.BodyParser(&authLogin); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(resp.Response{
 			Status:  false,
 			Body:    nil,
-			Message: "Error al realizar login",
+			Message: "Error al leer el JSON de la petición",
 		})
 	}
 
-	token, code,  err := ctrl.AuthService.Login(&authLogin)
-
-	if err != nil {
-		return c.Status(code).JSON(resp.Response{
+	if err := authLogin.Validate(); err != nil {
+		return c.Status(422).JSON(resp.Response{
 			Status:  false,
 			Body:    nil,
-			Message: token,
+			Message: err.Error(),
 		})
 	}
 
-	return c.Status(code).JSON(resp.Response{
+	token, err := ctrl.AuthService.Login(&authLogin)
+
+	if err != nil {
+		if errResp, ok := err.(*resp.ErrorStruc); ok {
+			return c.Status(errResp.StatusCode).JSON(resp.Response{
+				Status:  false,
+				Body:    nil,
+				Message: errResp.Message,
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(resp.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Error interno",
+		})
+	}
+
+	return c.Status(200).JSON(resp.Response{
 		Status:  true,
 		Body:    token,
 		Message: "Token obtenido con éxito",

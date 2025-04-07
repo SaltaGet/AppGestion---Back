@@ -23,13 +23,13 @@ func GenerateUserToken(user *user.User) (string, error) {
 	return t, nil
 }
 
-func VerifyClientToken(tokenString string) (bool, error) {
+func VerifyToken(tokenString string) (jwt.Claims, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return []byte(os.Getenv("SECRET_KEY")), nil
 	})
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 
-	return token.Valid, nil
+	return token.Claims, nil
 }

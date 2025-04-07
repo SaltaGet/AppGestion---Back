@@ -7,6 +7,20 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// //*********************************************************
+// func (ctrl *Controller) GetEntity(c *fiber.Ctx) error {
+// 	db := c.Locals("db").(*sql.DB) // Conexión del tenant
+	
+// 	// Usa la conexión específica
+// 	entity, err := ctrl.AuthService.GetEntity(db, c.Params("id"))
+// 	if err != nil {
+// 		// Manejo de errores
+// 	}
+	
+// 	return c.JSON(entity)
+// }
+// //*********************************************************
+
 func (ctrl Controller) Login(c *fiber.Ctx) error {
 	var authLogin auth.AuthLogin
 

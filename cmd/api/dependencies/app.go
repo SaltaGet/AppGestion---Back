@@ -36,3 +36,18 @@ func NewApplication(db *sql.DB) *Application {
 	}
 }
 
+func (app *Application) SetDBRepository(db *sql.DB) {
+	entityRepo := &entRep.Repository{DB: db,}
+	entityServ := &entServ.Service{EntityRepository: entityRepo}
+
+	userRepo := &userRep.Repository{DB: db,}
+	userServ := &userServ.Service{UserRepository: userRepo}
+
+	authRepo := &authRep.Repository{DB: db,}
+	authServ := &authServ.Service{AuthRepository: authRepo, UserRepository: userRepo}
+
+	app.UserController.UserService = userServ
+	app.EntityController.EntityService = entityServ
+	app.AuthController.AuthService = authServ
+}
+

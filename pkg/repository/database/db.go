@@ -4,17 +4,29 @@ import (
 	"fmt"
 	"database/sql"
 	"log"
-	_ "github.com/go-sql-driver/mysql"
+	// _ "github.com/go-sql-driver/mysql"
 	_ "github.com/mattn/go-sqlite3" 
+	"sync"
+	"time"
+	"os"
 )
 
-// var db *sql.DB
+var (
+	mainDB     *sql.DB
+	tenantDBs  = make(map[string]*sql.DB)
+	mu         sync.RWMutex
+)
 
 func ConectDB(uri string) (*sql.DB, error) {
 	db, err := sql.Open("sqlite3", uri)
 	if err != nil {
 		return nil, fmt.Errorf("error al abrir la conexión: %w", err)
 	}
+
+	db.SetMaxOpenConns(50)
+	db.SetMaxIdleConns(25)
+	db.SetConnMaxLifetime(3 * time.Hour)
+	db.SetConnMaxIdleTime(30 * time.Minute)
 	
 	if err = db.Ping(); err != nil {
 		return nil, fmt.Errorf("error al conectar con la base de datos: %w", err)
@@ -23,22 +35,69 @@ func ConectDB(uri string) (*sql.DB, error) {
 	CreatePrincipalTables(db)
 	CreateRoles(db)
 	CreateAdmin(db)
+
+	mainDB = db
 	
 	return db, nil
 }
 
-
-func CloseDB(db *sql.DB) error {
-	if db != nil {
-		return db.Close()
+func GetTenantDB(tenantID string) (*sql.DB, error) {
+	if tenantID == "default" {
+		return mainDB, nil
 	}
-	return nil
+
+	mu.RLock()
+	db, ok := tenantDBs[tenantID]
+	mu.RUnlock()
+
+	if ok {
+		return db, nil
+	}
+
+	mu.Lock()
+	defer mu.Unlock()
+
+	// Doble verificación
+	if db, ok := tenantDBs[tenantID]; ok {
+		return db, nil
+	}
+
+	uri := getTenantURI(tenantID)
+	db, err := sql.Open("sqlite3", uri)
+	if err != nil {
+		return nil, err
+	}
+
+	db.SetMaxOpenConns(50)
+	db.SetMaxIdleConns(25)
+	db.SetConnMaxLifetime(3 * time.Hour)
+	db.SetConnMaxIdleTime(30 * time.Minute)
+
+	tenantDBs[tenantID] = db
+	return db, nil
 }
 
-// GetDB retorna la conexión a la base de datos
-// func GetDB() *sql.DB {
-// 	return db
-// }
+func getTenantURI(tenantID string) string {
+	// Implementa tu lógica para obtener la URI del tenant
+	// Por ahora usamos la misma que la principal
+	return os.Getenv("URI_DB")
+}
+
+func CloseDB(db *sql.DB) error {
+	return db.Close()
+}
+
+func CloseAllTenantDBs() {
+	mu.Lock()
+	defer mu.Unlock()
+
+	for tenant, db := range tenantDBs {
+		if err := db.Close(); err != nil {
+			log.Printf("Error cerrando conexión tenant %s: %v", tenant, err)
+		}
+		delete(tenantDBs, tenant)
+	}
+}
 
 func ExecuteTransaction(db *sql.DB, query string, args ...interface{}) error {
 	tx, err := db.Begin()
@@ -103,6 +162,118 @@ func GetRows(db *sql.DB, query string, args ...interface{}) (*sql.Rows, error) {
 
 	return rows, nil
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Primera conexion
+// func ConectDB(uri string) (*sql.DB, error) {
+// 	db, err := sql.Open("sqlite3", uri)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("error al abrir la conexión: %w", err)
+// 	}
+	
+// 	if err = db.Ping(); err != nil {
+// 		return nil, fmt.Errorf("error al conectar con la base de datos: %w", err)
+// 	}
+
+// 	CreatePrincipalTables(db)
+// 	CreateRoles(db)
+// 	CreateAdmin(db)
+	
+// 	return db, nil
+// }
+
+
+// func CloseDB(db *sql.DB) error {
+// 	if db != nil {
+// 		return db.Close()
+// 	}
+// 	return nil
+// }
+
+// func ExecuteTransaction(db *sql.DB, query string, args ...interface{}) error {
+// 	tx, err := db.Begin()
+// 	if err != nil {
+// 			log.Printf("Error starting transaction: %v", err)
+// 			return err
+// 	}
+
+// 	_, err = tx.Exec(query, args...) // Acepta argumentos para consultas parametrizadas
+// 	if err != nil {
+// 			log.Printf("Error executing query: %v", err)
+// 			tx.Rollback()
+// 			return err
+// 	}
+
+// 	err = tx.Commit()
+// 	if err != nil {
+// 			log.Printf("Error committing transaction: %v", err)
+// 			return err
+// 	}
+
+// 	return nil
+// }
+
+// func ExecuteGroupTransactions(db *sql.DB, queries []string, args [][]interface{}) error {
+// 	tx, err := db.Begin()
+// 	if err != nil {
+// 					log.Printf("Error starting transaction: %v", err)
+// 					return err
+// 	}
+
+// 	for i, query := range queries {
+// 					_, err := tx.Exec(query, args[i]...)
+// 					if err != nil {
+// 									log.Printf("Error executing query: %v", err)
+// 									tx.Rollback()
+// 									return err
+// 					}
+// 	}
+
+// 	err = tx.Commit()
+// 	if err != nil {
+// 					log.Printf("Error committing transaction: %v", err)
+// 					return err
+// 	}
+
+// 	return nil
+// }
+
+// func GetRow(db *sql.DB, query string, args ...interface{}) *sql.Row  {
+// 	row := db.QueryRow(query, args...)
+// 	return row
+// }
+
+// func GetRows(db *sql.DB, query string, args ...interface{}) (*sql.Rows, error) {
+// 	rows, err := db.Query(query, args...)
+
+// 	if err != nil {
+// 		log.Printf("Error executing query: %v", err)
+// 		return nil, err
+// 	}
+
+// 	return rows, nil
+// }
+
 
 // // MYSQL
 // func InitDB() error {

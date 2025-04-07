@@ -138,6 +138,7 @@ func CreatePrincipalTables(db *sql.DB) {
   CREATE TABLE IF NOT EXISTS establishments (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL CHECK (LENGTH(name) <= 100),
+      email TEXT NOT NULL UNIQUE CHECK (LENGTH(email) <= 50),
       phone TEXT NOT NULL CHECK (LENGTH(phone) <= 20),
       address TEXT NOT NULL CHECK (LENGTH(address) <= 255),
       city TEXT NOT NULL CHECK (LENGTH(city) <= 100),

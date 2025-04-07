@@ -2,9 +2,11 @@ package entity
 
 import (
 	"api-stock/pkg/models/entity"
-	"github.com/google/uuid"
+	"api-stock/pkg/repository/database"
 	"errors"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 func (r *Repository) Insert(entity *entity.EntityCreate) (string, error){
@@ -22,6 +24,19 @@ func (r *Repository) Insert(entity *entity.EntityCreate) (string, error){
 
 	// Retornar el ID generado
 	return newId, nil
+}
+
+func (r *Repository) Exist(id string) (bool, error) {
+	query := `SELECT EXISTS(SELECT 1 FROM entities WHERE id = ?)`
+
+	row := database.GetRow(r.DB, query, id)
+
+	var exist bool
+	if err := row.Scan(&exist); err != nil {
+		return false, err
+	}
+
+	return exist, nil
 }
 
 func (r *Repository) Update(entity *entity.EntityUpdate) error {

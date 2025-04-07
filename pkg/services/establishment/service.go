@@ -1,4 +1,4 @@
-package entity
+package establishment
 
 import (
 	"api-stock/pkg/ports"	
@@ -6,4 +6,5 @@ import (
 
 type Service struct {
 	EntityRepository ports.EntityRepository	
+	EstablishmentRepository ports.EstablishmentRepository
 }

@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/gofiber/fiber/v2"
-	authCtrl "api-stock/cmd/api/controllers/auth"
+	authCtrl "appGestion/cmd/api/controllers/auth"
 	// mdw "api-stock/cmd/api/middleware"
 )
 

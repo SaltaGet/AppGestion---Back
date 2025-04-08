@@ -1,11 +1,31 @@
 package entity
 
 import (
-	ent "api-stock/pkg/models/entity"
-	resp "api-stock/pkg/models"
+	ent "appGestion/pkg/models/entity"
+	resp "appGestion/pkg/models"
 	"github.com/gofiber/fiber/v2"
 )
 
+type Response struct {
+	Code    int         `json:"code"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data,omitempty"`
+}
+
+//  Entity Entity create
+//	@Summary		Entity create
+//	@Description	Entity create
+//	@Tags			Entity
+//	@Accept			json
+//	@Produce		json
+//	@Param			entity	body		ent.EntityCreate	true	"Entity data"
+//	@Success		200		{object}	resp.Response
+//	@Failure		400		{object}	resp.Response
+//	@Failure		401		{object}	resp.Response
+//	@Failure		404		{object}	resp.Response
+//	@Failure		422		{object}	resp.Response
+//	@Failure		500		{object}	resp.Response
+//	@Router			/entities/create [post]
 func (ctrl Controller) CreateEntity(c *fiber.Ctx) error {
 	var entity ent.EntityCreate
 
@@ -15,7 +35,7 @@ func (ctrl Controller) CreateEntity(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(resp.Response{
 			Status:  false,
 			Body:    nil,
-			Message: "Error al crear cliente",
+			Message: "Error al crear entidad",
 		})
 	}
 
@@ -30,17 +50,24 @@ func (ctrl Controller) CreateEntity(c *fiber.Ctx) error {
 	id, err := ctrl.EntityService.Create(&entity)
 
 	if err != nil {
+		if errResp, ok := err.(*resp.ErrorStruc); ok {
+			return c.Status(errResp.StatusCode).JSON(resp.Response{
+				Status:  false,
+				Body:    nil,
+				Message: errResp.Message,
+			})
+		}
 		return c.Status(fiber.StatusInternalServerError).JSON(resp.Response{
 			Status:  false,
 			Body:    nil,
-			Message: "Error al intentar crear entidad",
+			Message: "Error interno",
 		})
 	}
 
 	return c.Status(fiber.StatusOK).JSON(resp.Response{
 		Status:  true,
 		Body:    map[string]string{"entity_id": id},
-		Message: "Cliente creado con éxito",
+		Message: "Entidad creada con éxito",
 	})
 }
 

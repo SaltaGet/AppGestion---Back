@@ -1,7 +1,7 @@
 package user
 
 import (
-	"api-stock/pkg/ports"
+	"appGestion/pkg/ports"
 )
 
 type Controller struct {

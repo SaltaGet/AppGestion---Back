@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/gofiber/fiber/v2"
-	dep "api-stock/cmd/api/dependencies"
+	dep "appGestion/cmd/api/dependencies"
 )
 
 func SetupRoutes(app *fiber.App, appDependencies *dep.Application) {

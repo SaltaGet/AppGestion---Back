@@ -1,0 +1,155 @@
+definitions:
+  auth.AuthLogin:
+    properties:
+      identifier:
+        type: string
+      password:
+        type: string
+    required:
+    - identifier
+    - password
+    type: object
+  entity.EntityCreate:
+    properties:
+      address:
+        example: 123 Main St
+        maxLength: 100
+        type: string
+      city:
+        example: New York
+        maxLength: 100
+        type: string
+      country:
+        example: USA
+        maxLength: 100
+        type: string
+      cuit:
+        example: "20123456789"
+        maxLength: 20
+        type: string
+      email:
+        example: entity@name.com
+        maxLength: 100
+        type: string
+      name:
+        example: Entity Name
+        maxLength: 100
+        type: string
+      phone:
+        example: "1234567890"
+        maxLength: 20
+        type: string
+      start_activities:
+        example: "2023-01-01"
+        type: string
+      zip_code:
+        example: "10001"
+        maxLength: 20
+        type: string
+    required:
+    - cuit
+    - email
+    - name
+    - phone
+    - start_activities
+    type: object
+  models.Response:
+    properties:
+      body: {}
+      message:
+        type: string
+      status:
+        type: boolean
+    type: object
+info:
+  contact: {}
+  description: This is a api to app gestion
+  termsOfService: http://swagger.io/terms/
+  title: APP GESTION
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Login user required identifier and password
+      parameters:
+      - description: Credentials
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/auth.AuthLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Login user
+      tags:
+      - Auth
+  /entities/create:
+    post:
+      consumes:
+      - application/json
+      description: Entity create
+      parameters:
+      - description: Entity data
+        in: body
+        name: entity
+        required: true
+        schema:
+          $ref: '#/definitions/entity.EntityCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Entity create
+      tags:
+      - Entity
+swagger: "2.0"

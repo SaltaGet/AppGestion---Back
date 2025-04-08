@@ -2,8 +2,8 @@ package establishment
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"api-stock/pkg/models/establishment"
-	resp "api-stock/pkg/models"
+	"appGestion/pkg/models/establishment"
+	resp "appGestion/pkg/models"
 )
 
 func (ctrl *Controller) Create(c *fiber.Ctx) error {

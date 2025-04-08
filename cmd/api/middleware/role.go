@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"api-stock/pkg/models/user"
+	"appGestion/pkg/models/user"
 	"github.com/gofiber/fiber/v2"
 )
 

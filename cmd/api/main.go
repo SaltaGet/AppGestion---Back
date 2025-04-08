@@ -1,16 +1,26 @@
 package main
 
 import (
-	mdw "api-stock/cmd/api/middleware"
-	"api-stock/cmd/api/routes"
-	"api-stock/cmd/api/dependencies"
-	"api-stock/pkg/repository/database"
+	"appGestion/cmd/api/dependencies"
+	mdw "appGestion/cmd/api/middleware"
+	"appGestion/cmd/api/routes"
+	"appGestion/pkg/repository/database"
 	"log"
 	"os"
-	"github.com/gofiber/fiber/v2"
-	"github.com/joho/godotenv"
 	"time"
+
+	_ "appGestion/cmd/api/docs"
+
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/swagger"
+	"github.com/joho/godotenv"
 )
+
+//	@title			APP GESTION
+//	@version		1.0
+//	@description	This is a api to app gestion
+//	@termsOfService	http://swagger.io/terms/
 
 func main() {
 	err := godotenv.Load("../../.env")
@@ -30,18 +40,44 @@ func main() {
 
 	dbMonitorInterval := 5 * time.Minute
 	appDependencies := dependencies.NewApplication(db)
-	
+
 	app := fiber.New()
-	app.Use(mdw.LogginMiddleware)
-	app.Use(mdw.AuthTenantMiddleware(appDependencies)) // <-- Nuevo middleware
-	app.Use(mdw.DBStatsLogger(db, dbMonitorInterval))
-	
-	routes.SetupRoutes(app, appDependencies)
-	
-	log.Fatal(app.Listen(":3000"))
-}
 
+	
+	app.Use(cors.New(cors.Config{
+		AllowOrigins:     "",
+		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
+		AllowMethods:     "GET, POST, PUT, DELETE, OPTIONS",
+		ExposeHeaders:    "Content-Length",
+		AllowCredentials: false,
+	}))
+	// app.Use(mdw.RecoverMiddleware)
+	// app.Use(mdw.RequestIDMiddleware)
+	// app.Use(mdw.LoggerMiddleware)
+	// app.Use(mdw.CompressMiddleware)
+	// app.Use(mdw.SwaggerMiddleware(swagger.Config{
+	// 	URL:     "/swagger/doc.json",
+	// 	DocPath: "/swagger/doc",
+	// }))
+	// app.Use(mdw.SwaggerUIHandler(swagger.Config{
+	// 	URL:     "/swagger/doc.json",
+	// 	DocPath: "/swagger/doc",
+	// }))
+	// app.Use(mdw.SwaggerUIHandler(swagger.Config{
+		// 	URL:     "/swagger/doc.json",
+		// 	DocPath: "/swagger/doc",
+		// }))
+		
+		app.Use(mdw.LoggingMiddleware)
+		app.Use(mdw.AuthTenantMiddleware(appDependencies)) // <-- Nuevo middleware
+		app.Use(mdw.DBStatsLogger(db, dbMonitorInterval))
+		
+		routes.SetupRoutes(app, appDependencies)
+		
+		app.Get("/swagger/*", swagger.HandlerDefault)
 
+		log.Fatal(app.Listen(":3000"))
+	}
 
 // func main() {
 // 	err := godotenv.Load("../../.env")
@@ -66,4 +102,3 @@ func main() {
 
 // 	log.Fatal(app.Listen(":3000"))
 // }
-

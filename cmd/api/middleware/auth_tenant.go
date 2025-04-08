@@ -1,10 +1,10 @@
 package middleware
 
 import (
-	"api-stock/cmd/api/dependencies"
-	"api-stock/pkg/models"
-	"api-stock/pkg/repository/database"
-	"api-stock/pkg/utils"
+	"appGestion/cmd/api/dependencies"
+	"appGestion/pkg/models"
+	"appGestion/pkg/repository/database"
+	"appGestion/pkg/utils"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"

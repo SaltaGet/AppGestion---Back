@@ -1,7 +1,7 @@
 package main
 
 import (
-	"appGestion/cmd/api/dependencies"
+	"appGestion/pkg/dependencies"
 	mdw "appGestion/cmd/api/middleware"
 	"appGestion/cmd/api/routes"
 	"appGestion/pkg/repository/database"
@@ -17,10 +17,14 @@ import (
 	"github.com/joho/godotenv"
 )
 
-//	@title			APP GESTION
-//	@version		1.0
-//	@description	This is a api to app gestion
-//	@termsOfService	http://swagger.io/terms/
+//	@title						APP GESTION
+//	@version					1.0
+//	@description				This is a api to app gestion
+//	@termsOfService				http://swagger.io/terms/
+//	@securityDefinitions.apikey	BearerAuth
+//	@in							header
+//	@name						Authorization
+//	@description				Type "Bearer" followed by a space and the JWT token. Example: "Bearer eyJhbGciOiJIUz..."
 
 func main() {
 	err := godotenv.Load("../../.env")
@@ -46,7 +50,7 @@ func main() {
 	
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     "",
-		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
+		AllowHeaders:     "Origin, Content-Type, Accept, Authorization, X-Tenant",
 		AllowMethods:     "GET, POST, PUT, DELETE, OPTIONS",
 		ExposeHeaders:    "Content-Length",
 		AllowCredentials: false,
@@ -67,10 +71,11 @@ func main() {
 		// 	URL:     "/swagger/doc.json",
 		// 	DocPath: "/swagger/doc",
 		// }))
+		mdw.StartDBStatsLogger(db, dbMonitorInterval)
 		
 		app.Use(mdw.LoggingMiddleware)
-		app.Use(mdw.AuthTenantMiddleware(appDependencies)) // <-- Nuevo middleware
-		app.Use(mdw.DBStatsLogger(db, dbMonitorInterval))
+		app.Use(mdw.InjectApp(appDependencies))
+		// app.Use(mdw.AuthTenantMiddleware(appDependencies)) // <-- Nuevo middleware
 		
 		routes.SetupRoutes(app, appDependencies)
 		

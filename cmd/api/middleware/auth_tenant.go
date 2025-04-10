@@ -1,8 +1,10 @@
 package middleware
 
 import (
-	"appGestion/cmd/api/dependencies"
+	"appGestion/pkg/dependencies"
+	"appGestion/pkg/key"
 	"appGestion/pkg/models"
+	"appGestion/pkg/models/user"
 	"appGestion/pkg/repository/database"
 	"appGestion/pkg/utils"
 
@@ -10,57 +12,56 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func AuthTenantMiddleware(deps *dependencies.Application) fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		// if isPublic, ok := c.Locals("is_public").(bool); ok && isPublic {
-		// 	tenantDB, err := database.GetTenantDB("default")
-		// 	if err != nil {
-		// 		return c.Status(500).JSON(models.Response{
-		// 			Status:  false,
-		// 			Message: "Error de conexión al tenant",
-		// 		})
-		// 	}
-		// 	deps.SetDBRepository(tenantDB)
-		// 	return c.Next()
-		// }
-		// 1. Autenticación (usa DB principal)
-		token := c.Get("Authorization")
-		if token == "" {
-			tenantDB, err := database.GetTenantDB("default")
-			if err != nil {
-				return c.Status(500).JSON(models.Response{
-					Status:  false,
-					Message: "Error de conexión al tenant",
-				})
-			}
+func JWTAauthTenant(c *fiber.Ctx) error {
+	token := c.Get("X-Tenant")
+	if token == "" {
+		return c.Status(401).JSON(models.Response{
+			Status:  false,
+			Message: "Token no encontrado",
+		})
+	}
 
-			deps.SetDBRepository(tenantDB)
-			return c.Next()
-		}
+	ctx := c.UserContext()
+	deps := ctx.Value(key.AppKey).(*dependencies.Application)
+	// deps.SetDBRepository(tenantDB)
 
-		// Valida token y obtiene tenant del usuario
-		claims, err := utils.VerifyToken(token)
+	claims, err := utils.VerifyToken(token)
 		if err != nil {
 			return c.Status(401).JSON(models.Response{
 				Status:  false,
 				Message: "Token inválido",
 			})
 		}
+	
+	establishmentId := claims.(jwt.MapClaims)["establishment_id"].(string)
+	user := c.Locals("user").(*user.User)
 
-		TenantID := claims.(jwt.MapClaims)["tenant_id"].(string)
-		// UserID := claims.(jwt.MapClaims)["user_id"].(string)
+	uri, err := deps.AuthController.AuthService.GetConnectionTenant(establishmentId, user.Id)
 
-		// 2. Obtiene conexión del tenant
-		tenantDB, err := database.GetTenantDB(TenantID)
-		if err != nil {
-			return c.Status(500).JSON(models.Response{
+	if err != nil {
+		if errResp, ok := err.(*models.ErrorStruc); ok {
+			return c.Status(errResp.StatusCode).JSON(models.Response{
 				Status:  false,
-				Message: "Error de conexión al tenant",
+				Body:    nil,
+				Message: errResp.Message,
 			})
 		}
-
-		deps.SetDBRepository(tenantDB)
-
-		return c.Next()
+		return c.Status(fiber.StatusInternalServerError).JSON(models.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Error interno",
+		})
 	}
+
+	tenantDB, err := database.GetTenantDB(uri)
+
+	if err != nil {
+		return c.Status(500).JSON(models.Response{
+			Status:  false,
+			Message: "Error de conexión al tenant",
+		})
+	}
+
+	deps.SetDBRepository(tenantDB)
+	return c.Next()
 }

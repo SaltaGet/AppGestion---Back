@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/gofiber/fiber/v2"
-	dep "appGestion/cmd/api/dependencies"
+	dep "appGestion/pkg/dependencies"
 )
 
 func SetupRoutes(app *fiber.App, appDependencies *dep.Application) {
@@ -12,7 +12,7 @@ func SetupRoutes(app *fiber.App, appDependencies *dep.Application) {
 	EntitiesRoutes(app, appDependencies.EntityController)
 	DailyMovementsRoutes(app)
 	DiscontinuedRoutes(app)
-	EntablishmentsRoutes(app)
+	EntablishmentsRoutes(app, appDependencies.EstablishmentController)
 	ProductRoutes(app)
 	SalesRoutes(app)
 	StocksRoutes(app)

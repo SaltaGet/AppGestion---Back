@@ -6,6 +6,21 @@ import (
 	resp "appGestion/pkg/models"
 )
 
+//  Establishment Establishment create
+//	@Summary		Establishment create
+//	@Description	Establishment create
+//	@Tags			Establishment
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			establishment	body		establishment.EstablishmentCreate	true	"Establishment data"
+//	@Success		200				{object}	resp.Response
+//	@Failure		400				{object}	resp.Response
+//	@Failure		401				{object}	resp.Response
+//	@Failure		404				{object}	resp.Response
+//	@Failure		422				{object}	resp.Response
+//	@Failure		500				{object}	resp.Response
+//	@Router			/establishments/create [post]
 func (ctrl *Controller) Create(c *fiber.Ctx) error {
 	var establishment establishment.EstablishmentCreate
 	

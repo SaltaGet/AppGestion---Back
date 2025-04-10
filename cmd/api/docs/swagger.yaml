@@ -53,6 +53,40 @@ definitions:
     - phone
     - start_activities
     type: object
+  establishment.EstablishmentCreate:
+    properties:
+      address:
+        maxLength: 255
+        type: string
+      city:
+        maxLength: 100
+        type: string
+      country:
+        maxLength: 255
+        type: string
+      date_create:
+        type: string
+      email:
+        type: string
+      entity_id:
+        type: string
+      name:
+        maxLength: 100
+        type: string
+      phone:
+        type: string
+      zip_code:
+        maxLength: 20
+        type: string
+    required:
+    - address
+    - city
+    - country
+    - date_create
+    - email
+    - name
+    - zip_code
+    type: object
   models.Response:
     properties:
       body: {}
@@ -152,4 +186,55 @@ paths:
       summary: Entity create
       tags:
       - Entity
+  /establishments/create:
+    post:
+      consumes:
+      - application/json
+      description: Establishment create
+      parameters:
+      - description: Establishment data
+        in: body
+        name: establishment
+        required: true
+        schema:
+          $ref: '#/definitions/establishment.EstablishmentCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Establishment create
+      tags:
+      - Establishment
+securityDefinitions:
+  BearerAuth:
+    description: 'Type "Bearer" followed by a space and the JWT token. Example: "Bearer
+      eyJhbGciOiJIUz..."'
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

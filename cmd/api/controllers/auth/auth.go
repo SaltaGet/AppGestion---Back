@@ -13,13 +13,13 @@ import (
 //	@Tags			Auth
 //	@Accept			json
 //	@Produce		json
-//	@Param			credentials	body	auth.AuthLogin	true	"Credentials"
-//	@Success		200	{object}	resp.Response
-//	@Failure		400	{object}	resp.Response
-//	@Failure		401	{object}	resp.Response
-//	@Failure		422	{object}	resp.Response
-//	@Failure		404	{object}	resp.Response
-//	@Failure		500	{object}	resp.Response
+//	@Param			credentials	body		auth.AuthLogin	true	"Credentials"
+//	@Success		200			{object}	resp.Response
+//	@Failure		400			{object}	resp.Response
+//	@Failure		401			{object}	resp.Response
+//	@Failure		422			{object}	resp.Response
+//	@Failure		404			{object}	resp.Response
+//	@Failure		500			{object}	resp.Response
 //	@Router			/auth/login [post]
 func (ctrl Controller) Login(c *fiber.Ctx) error {
 	var authLogin auth.AuthLogin

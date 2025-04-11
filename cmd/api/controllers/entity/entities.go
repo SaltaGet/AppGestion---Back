@@ -6,18 +6,13 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-type Response struct {
-	Code    int         `json:"code"`
-	Message string      `json:"message"`
-	Data    interface{} `json:"data,omitempty"`
-}
-
 //  Entity Entity create
 //	@Summary		Entity create
 //	@Description	Entity create
 //	@Tags			Entity
 //	@Accept			json
 //	@Produce		json
+//	@Security		BearerAuth
 //	@Param			entity	body		ent.EntityCreate	true	"Entity data"
 //	@Success		200		{object}	resp.Response
 //	@Failure		400		{object}	resp.Response
@@ -66,45 +61,43 @@ func (ctrl Controller) CreateEntity(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusOK).JSON(resp.Response{
 		Status:  true,
-		Body:    map[string]string{"entity_id": id},
+		Body:    id,
 		Message: "Entidad creada con éxito",
 	})
 }
 
-// func ClientLogin(c *fiber.Ctx) error {
-// 	var clienLogin cl.ClientLogin
+//  Entity Entity get
+//	@Summary		Entity all get
+//	@Description	Entity all create
+//	@Tags			Entity
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Success		200	{object}	resp.Response{body=[]ent.Entity}
+//	@Failure		401	{object}	resp.Response{body=nil}
+//	@Failure		500	{object}	resp.Response{body=nil}
+//	@Router			/entities/get_all [get]
+func (ctrl Controller) GetAll(c *fiber.Ctx) error {
+	entities, err := ctrl.EntityService.GetAll()
 
-// 	err := c.BodyParser(&clienLogin)
+	if err != nil {
+		if errResp, ok := err.(*resp.ErrorStruc); ok {
+			return c.Status(errResp.StatusCode).JSON(resp.Response{
+				Status:  false,
+				Body:    nil,
+				Message: errResp.Message,
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(resp.Response{
+			Status:  false,
+			Body:    nil,
+			Message: "Error interno",
+		})
+	}
 
-// 	if err != nil {
-// 		return c.Status(fiber.StatusBadRequest).JSON(m.Response{
-// 			Status:  false,
-// 			Body:    nil,
-// 			Message: "Error al intentar loguearse",
-// 		})
-// 	}
-
-// 	if err := clienLogin.Validate(); err != nil {
-// 		return c.Status(422).JSON(m.Response{
-// 			Status:  false,
-// 			Body:    nil,
-// 			Message: err.Error(),
-// 		})
-// 	}
-
-// 	status, message, err := s.LoginClient(&clienLogin)
-
-// 	if status > 299 {
-// 		return c.Status(status).JSON(m.Response{
-// 			Status:  false,
-// 			Body:    err,
-// 			Message: message,
-// 		})
-// 	}
-
-// 	return c.Status(status).JSON(m.Response{
-// 		Status:  true,
-// 		Body:    map[string]string{"token": message},
-// 		Message: "Token generado con exito",
-// 	})
-// }
+	return c.Status(fiber.StatusOK).JSON(resp.Response{
+		Status:  true,
+		Body:    entities,
+		Message: "Entidades obtenidas con éxito",
+	})
+}

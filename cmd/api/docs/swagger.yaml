@@ -9,6 +9,35 @@ definitions:
     - identifier
     - password
     type: object
+  entity.Entity:
+    properties:
+      address:
+        type: string
+      city:
+        type: string
+      country:
+        type: string
+      created:
+        type: string
+      cuit:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      name:
+        type: string
+      phone:
+        type: string
+      start_activities:
+        type: string
+      updated:
+        type: string
+      zip_code:
+        type: string
+    type: object
   entity.EntityCreate:
     properties:
       address:
@@ -56,36 +85,41 @@ definitions:
   establishment.EstablishmentCreate:
     properties:
       address:
-        maxLength: 255
+        example: 123 Main St
+        maxLength: 100
         type: string
       city:
+        example: New York
         maxLength: 100
         type: string
       country:
-        maxLength: 255
+        example: USA
+        maxLength: 100
         type: string
       date_create:
+        example: "2023-01-01"
         type: string
       email:
+        example: name@establishment.com
         type: string
       entity_id:
+        example: 00000000-aaaa-0000-aaaa-000000000000
         type: string
       name:
+        example: Establishment Name
         maxLength: 100
         type: string
       phone:
+        example: "1231231231"
         type: string
       zip_code:
+        example: "10001"
         maxLength: 20
         type: string
     required:
-    - address
-    - city
-    - country
     - date_create
     - email
     - name
-    - zip_code
     type: object
   models.Response:
     properties:
@@ -94,6 +128,63 @@ definitions:
         type: string
       status:
         type: boolean
+    type: object
+  user.UserCreate:
+    properties:
+      address:
+        example: 123 Main St
+        maxLength: 100
+        type: string
+      city:
+        example: New York
+        maxLength: 100
+        type: string
+      country:
+        example: USA
+        maxLength: 100
+        type: string
+      email:
+        example: john@doe.com
+        maxLength: 100
+        type: string
+      entity_id:
+        example: 00000000-aaaa-0000-aaaa-000000000000
+        type: string
+      first_name:
+        example: John
+        maxLength: 100
+        type: string
+      identifier:
+        example: "12345678"
+        maxLength: 20
+        type: string
+      last_name:
+        example: Doe
+        maxLength: 100
+        type: string
+      password:
+        example: P@ssw0rd
+        type: string
+      phone:
+        example: "1234567890"
+        maxLength: 20
+        type: string
+      role_id:
+        example: 00000000-aaaa-0000-aaaa-000000000000
+        type: string
+      zip_code:
+        example: "10001"
+        maxLength: 20
+        type: string
+    required:
+    - email
+    - entity_id
+    - first_name
+    - identifier
+    - last_name
+    - password
+    - phone
+    - role_id
     type: object
 info:
   contact: {}
@@ -183,7 +274,78 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
       summary: Entity create
+      tags:
+      - Entity
+  /entities/get_all:
+    get:
+      consumes:
+      - application/json
+      description: Entity all create
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  items:
+                    $ref: '#/definitions/entity.Entity'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  type: object
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  type: object
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  type: object
+              type: object
+        "422":
+          description: Unprocessable Entity
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  type: object
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.Response'
+            - properties:
+                body:
+                  type: object
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Entity all get
       tags:
       - Entity
   /establishments/create:
@@ -230,6 +392,50 @@ paths:
       summary: Establishment create
       tags:
       - Establishment
+  /users/create:
+    post:
+      consumes:
+      - application/json
+      description: User create
+      parameters:
+      - description: User data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/user.UserCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: User create
+      tags:
+      - User
 securityDefinitions:
   BearerAuth:
     description: 'Type "Bearer" followed by a space and the JWT token. Example: "Bearer

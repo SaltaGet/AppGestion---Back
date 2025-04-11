@@ -7,6 +7,21 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+//  User User create
+//	@Summary		User create
+//	@Description	User create
+//	@Tags			User
+//	@Accept			json
+//	@Produce		json
+//	@Security		BearerAuth
+//	@Param			user	body		user.UserCreate	true	"User data"
+//	@Success		200		{object}	resp.Response
+//	@Failure		400		{object}	resp.Response
+//	@Failure		401		{object}	resp.Response
+//	@Failure		404		{object}	resp.Response
+//	@Failure		422		{object}	resp.Response
+//	@Failure		500		{object}	resp.Response
+//	@Router			/users/create [post]
 func (ctrl *Controller) Create(c *fiber.Ctx) error {
 	var user user.UserCreate
 
@@ -45,7 +60,7 @@ func (ctrl *Controller) Create(c *fiber.Ctx) error {
 
 	return c.Status(200).JSON(resp.Response{
 		Status:  true,
-		Body:    id,
+		Body:    map[string]string{"user_id":id},
 		Message: "Usuario creado con éxito",
 	})
 }

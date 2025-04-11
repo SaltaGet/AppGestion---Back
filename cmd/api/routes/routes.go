@@ -16,7 +16,7 @@ func SetupRoutes(app *fiber.App, appDependencies *dep.Application) {
 	ProductRoutes(app)
 	SalesRoutes(app)
 	StocksRoutes(app)
-	UserRoutes(app)
+	UserRoutes(app, appDependencies.UserController)
 }
 
 // type User struct {

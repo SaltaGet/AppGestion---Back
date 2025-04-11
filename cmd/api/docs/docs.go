@@ -82,6 +82,11 @@ const docTemplate = `{
         },
         "/entities/create": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Entity create",
                 "consumes": [
                     "application/json"
@@ -139,6 +144,139 @@ const docTemplate = `{
                         "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/models.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/entities/get_all": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Entity all create",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Entity"
+                ],
+                "summary": "Entity all get",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "body": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/entity.Entity"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "body": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "body": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "body": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "body": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "body": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -212,6 +350,75 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/users/create": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "User create",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "User create",
+                "parameters": [
+                    {
+                        "description": "User data",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/user.UserCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/models.Response"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -226,6 +433,50 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "entity.Entity": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "created": {
+                    "type": "string"
+                },
+                "cuit": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "start_activities": {
+                    "type": "string"
+                },
+                "updated": {
+                    "type": "string"
+                },
+                "zip_code": {
                     "type": "string"
                 }
             }
@@ -289,46 +540,51 @@ const docTemplate = `{
         "establishment.EstablishmentCreate": {
             "type": "object",
             "required": [
-                "address",
-                "city",
-                "country",
                 "date_create",
                 "email",
-                "name",
-                "zip_code"
+                "name"
             ],
             "properties": {
                 "address": {
                     "type": "string",
-                    "maxLength": 255
+                    "maxLength": 100,
+                    "example": "123 Main St"
                 },
                 "city": {
                     "type": "string",
-                    "maxLength": 100
+                    "maxLength": 100,
+                    "example": "New York"
                 },
                 "country": {
                     "type": "string",
-                    "maxLength": 255
+                    "maxLength": 100,
+                    "example": "USA"
                 },
                 "date_create": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2023-01-01"
                 },
                 "email": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "name@establishment.com"
                 },
                 "entity_id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "00000000-aaaa-0000-aaaa-000000000000"
                 },
                 "name": {
                     "type": "string",
-                    "maxLength": 100
+                    "maxLength": 100,
+                    "example": "Establishment Name"
                 },
                 "phone": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "1231231231"
                 },
                 "zip_code": {
                     "type": "string",
-                    "maxLength": 20
+                    "maxLength": 20,
+                    "example": "10001"
                 }
             }
         },
@@ -341,6 +597,78 @@ const docTemplate = `{
                 },
                 "status": {
                     "type": "boolean"
+                }
+            }
+        },
+        "user.UserCreate": {
+            "type": "object",
+            "required": [
+                "email",
+                "entity_id",
+                "first_name",
+                "identifier",
+                "last_name",
+                "password",
+                "phone",
+                "role_id"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "example": "123 Main St"
+                },
+                "city": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "example": "New York"
+                },
+                "country": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "example": "USA"
+                },
+                "email": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "example": "john@doe.com"
+                },
+                "entity_id": {
+                    "type": "string",
+                    "example": "00000000-aaaa-0000-aaaa-000000000000"
+                },
+                "first_name": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "example": "John"
+                },
+                "identifier": {
+                    "type": "string",
+                    "maxLength": 20,
+                    "example": "12345678"
+                },
+                "last_name": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "example": "Doe"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "P@ssw0rd"
+                },
+                "phone": {
+                    "type": "string",
+                    "maxLength": 20,
+                    "example": "1234567890"
+                },
+                "role_id": {
+                    "type": "string",
+                    "example": "00000000-aaaa-0000-aaaa-000000000000"
+                },
+                "zip_code": {
+                    "type": "string",
+                    "maxLength": 20,
+                    "example": "10001"
                 }
             }
         }

@@ -1,14 +1,13 @@
 package routes
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"appGestion/cmd/api/controllers/user"
+	"appGestion/cmd/api/middleware"
 
-func UserRoutes(app *fiber.App) {
+	"github.com/gofiber/fiber/v2"
+)
+
+func UserRoutes(app *fiber.App, ctrl *user.Controller) {
 	users := app.Group("/users")
-	users.Get("/", getUsers)       // GET /users
-	users.Get("/:id", getUserById) // GET /users/:id
-	users.Post("/", createUser)    // POST /users
+	users.Post("/create", middleware.RequireAuth(true), ctrl.Create) 
 }
-
-func getUsers(c *fiber.Ctx) error       { return c.SendString("Lista de usuarios") }
-func getUserById(c *fiber.Ctx) error    { return c.SendString("Usuario ID: " + c.Params("id")) }
-func createUser(c *fiber.Ctx) error     { return c.SendString("Usuario creado") }

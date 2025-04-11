@@ -46,7 +46,7 @@ func JWTAauth(c *fiber.Ctx, isAdmin ...bool) error {
 			})
 		}
 	
-	userId := claims.(jwt.MapClaims)["user_id"].(string)
+	userId := claims.(jwt.MapClaims)["id"].(string)
 
 	user, err := deps.AuthController.AuthService.GetCurrentUser(userId)
 

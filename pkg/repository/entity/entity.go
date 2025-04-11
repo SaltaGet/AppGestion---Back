@@ -1,32 +1,29 @@
 package entity
 
 import (
-	"api-stock/pkg/models/entity"
-	"api-stock/pkg/repository/database"
-	"errors"
-	"time"
+	"appGestion/pkg/models/entity"
+	"appGestion/pkg/repository/database"
+	"appGestion/pkg/utils"
 
 	"github.com/google/uuid"
 )
 
 func (r *Repository) Insert(entity *entity.EntityCreate) (string, error){
-	query := `INSERT INTO entities (id, email, cuit, name, password, phone, created, updated)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+	query := `INSERT INTO entities (id, email, cuit, name, phone, start_activities, address, city, country, zip_code)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
-	// Generar un nuevo ID único
 	newId := uuid.NewString()
 
-	// Ejecutar la consulta para insertar el cliente
-	_, err := r.DB.Exec(query, newId, entity.Email, entity.CUIT, entity.Name, entity.Password, entity.Cellphone, time.Now().UTC(), time.Now().UTC())
+	err := database.ExecuteTransaction(r.DB, query,newId, entity.Email, entity.CUIT, entity.Name, entity.Phone, entity.StartActitivies, entity.Address, entity.City, entity.Country, entity.ZipCode)	
+
 	if err != nil {
-			return "", errors.New("error al insertar el cliente en la base de datos")
+			return "", err
 	}
 
-	// Retornar el ID generado
 	return newId, nil
 }
 
-func (r *Repository) Exist(id string) (bool, error) {
+func (r *Repository) ExistById(id string) (bool, error) {
 	query := `SELECT EXISTS(SELECT 1 FROM entities WHERE id = ?)`
 
 	row := database.GetRow(r.DB, query, id)
@@ -37,6 +34,38 @@ func (r *Repository) Exist(id string) (bool, error) {
 	}
 
 	return exist, nil
+}
+
+func (r *Repository) ExistByCUIT(cuit string) (bool, error) {
+	query := `SELECT EXISTS(SELECT 1 FROM entities WHERE cuit = ?)`
+
+	row := database.GetRow(r.DB, query, cuit)
+
+	var exist bool
+	if err := row.Scan(&exist); err != nil {
+		return false, err
+	}
+
+	return exist, nil
+}
+
+func (r *Repository) GetAll() (*[]entity.Entity, error) {
+	query := `SELECT * FROM entities`
+
+	rows, err := database.GetRows(r.DB, query)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var entities []entity.Entity
+	err = utils.MapRowsToStruct(rows, &entities)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &entities, nil 
 }
 
 func (r *Repository) Update(entity *entity.EntityUpdate) error {

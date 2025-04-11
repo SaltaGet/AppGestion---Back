@@ -1,16 +1,16 @@
 package establishment
 
 import (
-	"api-stock/pkg/models/establishment"
-	"api-stock/pkg/models"
-	"api-stock/pkg/repository/database"
+	"appGestion/pkg/models/establishment"
+	"appGestion/pkg/models"
+	"appGestion/pkg/repository/database"
 	"os"
 	"fmt"
-	"api-stock/pkg/utils"
+	"appGestion/pkg/utils"
 )
 
 func (s *Service) Create(establishment *establishment.EstablishmentCreate) (string, error) {
-	exist, err := s.EntityRepository.Exist(establishment.EntityId)
+	exist, err := s.EntityRepository.ExistById(establishment.EntityId)
 
 	if err != nil {
 		return "", models.ErrorResponse(500, "Error al obtener entidad", err)

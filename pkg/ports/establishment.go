@@ -1,7 +1,7 @@
 package ports
 
 import(
-	"api-stock/pkg/models/establishment"
+	"appGestion/pkg/models/establishment"
 )
 
 type EstablishmentService interface {
@@ -10,4 +10,5 @@ type EstablishmentService interface {
 
 type EstablishmentRepository interface {
 	Create(establishment *establishment.EstablishmentCreate, connection string) (id string, err error)
+	GetEstablishmentById(establishmentId string, userId string) (connection string, err error)
 }

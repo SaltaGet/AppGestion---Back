@@ -1,11 +1,11 @@
 package product
 
 import (
-	buy "api-stock/pkg/models/buy"
-	cat "api-stock/pkg/models/category"
-	dm "api-stock/pkg/models/daily_movement"
-	disc "api-stock/pkg/models/discontinued"
-	sal "api-stock/pkg/models/sale"
+	buy "appGestion/pkg/models/buy"
+	cat "appGestion/pkg/models/category"
+	dm "appGestion/pkg/models/daily_movement"
+	disc "appGestion/pkg/models/discontinued"
+	sal "appGestion/pkg/models/sale"
 	"time"
 )
 

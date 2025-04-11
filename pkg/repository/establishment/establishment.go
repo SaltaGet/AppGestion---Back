@@ -1,8 +1,8 @@
 package establishment
 
 import (
-	"api-stock/pkg/models/establishment"
-	"api-stock/pkg/repository/database"
+	"appGestion/pkg/models/establishment"
+	"appGestion/pkg/repository/database"
 	"github.com/google/uuid"
 )
 
@@ -20,4 +20,19 @@ func (r *Repository) Create(establishment *establishment.EstablishmentCreate, co
 	}
 
 	return newId, nil
+}
+
+func (r *Repository) GetEstablishmentById(establishmentId string, userId string) (string, error) {
+	query := `SELECT connection FROM establishments e
+		JOIN establishment_user eu ON e.id = eu.establishment_id
+		WHERE e.id = ? AND eu.user_id = ?`
+
+	row := database.GetRow(r.DB, query, establishmentId, userId)
+
+	var connection string
+	if err := row.Scan(&connection); err != nil {
+		return "", err
+	}
+
+	return connection, nil
 }

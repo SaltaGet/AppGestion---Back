@@ -1,7 +1,7 @@
 package establishment
 
 import (
-	"api-stock/pkg/ports"	
+	"appGestion/pkg/ports"	
 )
 
 type Service struct {

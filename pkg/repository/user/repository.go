@@ -7,7 +7,3 @@ import (
 type Repository struct {
 	DB *sql.DB
 }
-
-func (r *Repository) SetDB(db *sql.DB) {
-	r.DB = db
-}

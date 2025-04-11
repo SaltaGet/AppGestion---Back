@@ -1,8 +1,6 @@
 package entity
 
 import (
-	est "api-stock/pkg/models/establishment"
-	r "api-stock/pkg/models/role"
 	"time"
 )
 
@@ -28,6 +26,4 @@ type Entity struct {
 	IsActive        bool                `json:"is_active"`
 	Created         time.Time           `json:"created"`
 	Updated         time.Time           `json:"updated"`
-	Establishments  []est.Establishment `json:"establishments"`
-	Role            r.Role              `json:"role"`
 }

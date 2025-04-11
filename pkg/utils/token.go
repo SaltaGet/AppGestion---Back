@@ -1,8 +1,10 @@
 package utils
 
 import (
+	"appGestion/pkg/models/establishment"
+	"appGestion/pkg/models/user"
 	"os"
-	"api-stock/pkg/models/user"
+	"strings"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -24,7 +26,8 @@ func GenerateUserToken(user *user.User) (string, error) {
 }
 
 func VerifyToken(tokenString string) (jwt.Claims, error) {
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+	cleanToken := CleanToken(tokenString)
+	token, err := jwt.Parse(cleanToken, func(token *jwt.Token) (interface{}, error) {
 		return []byte(os.Getenv("SECRET_KEY")), nil
 	})
 	if err != nil {
@@ -32,4 +35,36 @@ func VerifyToken(tokenString string) (jwt.Claims, error) {
 	}
 
 	return token.Claims, nil
+}
+
+func GenerateTenantToken(establishment *establishment.Establishment) (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"id": establishment.Id,
+	})
+
+	t, err := token.SignedString([]byte(os.Getenv("SECRET_TENANT_KEY")))
+	if err != nil {
+		return "", err
+	}
+
+	return t, nil
+}
+
+func VerifyTenantToken(tokenString string) (jwt.Claims, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("SECRET_TENANT_KEY")), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return token.Claims, nil
+}
+
+func CleanToken(bearerToken string) string {
+	const prefix = "Bearer "
+	if strings.HasPrefix(bearerToken, prefix) {
+		return strings.TrimPrefix(bearerToken, prefix)
+	}
+	return bearerToken
 }

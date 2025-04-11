@@ -115,6 +115,7 @@ func CreatePrincipalTables(db *sql.DB) {
       country TEXT CHECK (LENGTH(country) <= 255),
       zip_code TEXT CHECK (LENGTH(zip_code) <= 20),
       password TEXT NOT NULL,
+      is_admin BOOLEAN NOT NULL DEFAULT FALSE,
       created DATETIME NOT NULL DEFAULT (datetime('now')),
       updated DATETIME NOT NULL DEFAULT (datetime('now'))
   );

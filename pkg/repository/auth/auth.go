@@ -1,8 +1,8 @@
 package auth
 
 import (
-	"api-stock/pkg/models/auth"
-	"api-stock/pkg/models/user"
+	"appGestion/pkg/models/auth"
+	"appGestion/pkg/models/user"
 	// "api-stock/pkg/repository/database"
 	// "api-stock/pkg/utils"
 )

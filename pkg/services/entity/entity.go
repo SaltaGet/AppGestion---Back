@@ -2,80 +2,48 @@ package entity
 
 import (
 	// db "api-stock/pkg/repository/database"
-	ent "api-stock/pkg/models/entity"
+	"appGestion/pkg/models/entity"
+	"appGestion/pkg/models"
 	// "api-stock/pkg/utils"
-	"github.com/google/uuid"
+	
 	// "database/sql"
 	// "os"
 	// "time"
 	// "errors"
 )
 
-func (s *Service) LoginClient(clientLogin *ent.ClientLogin) (int, string, error) {
-	// query := `SELECT * FROM clients WHERE cuit = ?`
 
-	// row := db.QueryRow(query, clientLogin.CUIT)
+func (s *Service) Create(entity *entity.EntityCreate) (string, error) {
+	exist, err := s.EntityRepository.ExistByCUIT(entity.CUIT)
 
-	// var client ent.Entity
+	if err != nil {
+		return "", models.ErrorResponse(500, "Error al intentar acceder a la entidad", err)
+	}
 
-	// err := row.Scan(&client.Id, &client.Email, &client.CUIT, &client.Name,
-	// 	&client.Phone, &client.Role, &client.IsActive, &client.Created, &client.Updated)
+	if exist {
+		return "", models.ErrorResponse(404, "La entidad ya existe", err)
+	}
 
-	// if err != nil {
-	// 	if errors.Is(err, sql.ErrNoRows) {
+	newId, err := s.EntityRepository.Insert(entity)
 
-	// 		return 404, "Credenciales incorrectas", err
-	// 	}
-	// 	return 500, "Error al obtener usuario para el login", err
-	// }
-
-	// if !utils.CheckPasswordHash(clientLogin.Password, client.Password) {
-	// 	return 404, "Credenciales incorrectas", nil
-	// }
-
-	// token, err := utils.GenerateClientToken(&client)
-
-	// if err != nil {
-	// 	return 500, "Error al intentar generar el token", err
-	// }
-
-	// return 200, token, nil
-	return 200, "", nil
-
-}
-
-func (s Service) Create(entity *ent.EntityCreate) (string, error) {
-	// exist, err := GetClientByCUIT(entity.CUIT)
-
-	// if err != nil {
-	// 	return "", err
-	// }
-
-	// if exist {
-	// 	return "", err
-	// }
-
-	// query := `INSERT INTO clients (id, email, cuit, name, password, phone, created_at, updated_at)
-	// 	VALUES (?,?,?,?,?,?,?,?)`
-
-	newId := uuid.NewString()
-
-	// passHash, err := utils.HashPassword(os.Getenv("PASSWORD_ADMIN"))
-
-	// if err != nil {
-	// 	return "Se produjo un error al tratar al cliente", err
-	// }
-
-	// _, err = db.Exec(query, newId, entity.Email, entity.CUIT, entity.Name, passHash, entity.Cellphone, time.Now(), time.Now())
-
-	// if err != nil {
-	// 	return "Se producjo un error al tratar al cliente", err
-	// }
+	if err != nil {
+		return "", models.ErrorResponse(500, "Error al intentar crear la entidad", err)
+	}
 
 	return newId, nil
 }
 
-func (s Service) Update(entity *ent.EntityUpdate) error {
+func (s *Service) GetAll() (*[]entity.Entity, error) {
+	entities, err := s.EntityRepository.GetAll()
+
+	if err != nil {
+		return nil, models.ErrorResponse(500, "Error al recuperar las entidades", err)
+	}
+
+	return entities, nil
+}
+
+func (s Service) Update(entity *entity.EntityUpdate) error {
 	return nil
 }
 
@@ -96,6 +64,6 @@ func GetClientByCUIT(id string) (bool, error) {
 	return true, nil
 }
 
-func (s *Service) Insert(entity *ent.EntityCreate) (string, error) {
+func (s *Service) Insert(entity *entity.EntityCreate) (string, error) {
 	return "", nil
 }

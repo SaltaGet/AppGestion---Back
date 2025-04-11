@@ -8,7 +8,7 @@ import (
 	_ "github.com/mattn/go-sqlite3" 
 	"sync"
 	"time"
-	"os"
+	// "os"
 )
 
 var (
@@ -41,13 +41,13 @@ func ConectDB(uri string) (*sql.DB, error) {
 	return db, nil
 }
 
-func GetTenantDB(tenantID string) (*sql.DB, error) {
-	if tenantID == "default" {
+func GetTenantDB(uri string) (*sql.DB, error) {
+	if uri == "default" {
 		return mainDB, nil
 	}
 
 	mu.RLock()
-	db, ok := tenantDBs[tenantID]
+	db, ok := tenantDBs[uri]
 	mu.RUnlock()
 
 	if ok {
@@ -57,12 +57,11 @@ func GetTenantDB(tenantID string) (*sql.DB, error) {
 	mu.Lock()
 	defer mu.Unlock()
 
-	// Doble verificación
-	if db, ok := tenantDBs[tenantID]; ok {
+	if db, ok := tenantDBs[uri]; ok {
 		return db, nil
 	}
 
-	uri := getTenantURI(tenantID)
+	// uri := getTenantURI(tenantID)
 	db, err := sql.Open("sqlite3", uri)
 	if err != nil {
 		return nil, err
@@ -73,15 +72,15 @@ func GetTenantDB(tenantID string) (*sql.DB, error) {
 	db.SetConnMaxLifetime(3 * time.Hour)
 	db.SetConnMaxIdleTime(30 * time.Minute)
 
-	tenantDBs[tenantID] = db
+	tenantDBs[uri] = db
 	return db, nil
 }
 
-func getTenantURI(tenantID string) string {
-	// Implementa tu lógica para obtener la URI del tenant
-	// Por ahora usamos la misma que la principal
-	return os.Getenv("URI_DB")
-}
+// func getTenantURI(tenantID string) string {
+// 	// Implementa tu lógica para obtener la URI del tenant
+// 	// Por ahora usamos la misma que la principal
+// 	return os.Getenv("URI_DB")
+// }
 
 func CloseDB(db *sql.DB) error {
 	return db.Close()

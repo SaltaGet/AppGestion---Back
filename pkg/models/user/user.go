@@ -2,9 +2,9 @@ package user
 
 import (
 	"time"
-	ent "api-stock/pkg/models/entity"
-	est "api-stock/pkg/models/establishment"
-	r "api-stock/pkg/models/role"
+	ent "appGestion/pkg/models/entity"
+	est "appGestion/pkg/models/establishment"
+	r "appGestion/pkg/models/role"
 )
 
 type User struct {
@@ -19,6 +19,7 @@ type User struct {
 	Country    string    `json:"country"`
 	ZipCode    string    `json:"zip_code"`
 	Password   string    `json:"password"`
+	IsAdmin 	bool      `json:"is_admin"`
 	Created  time.Time `json:"created"`
 	Updated  time.Time `json:"updated"`
 	Entities []ent.Entity `json:"entities"`

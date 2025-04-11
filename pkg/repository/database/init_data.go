@@ -1,7 +1,7 @@
 package database
 
 import (
-	"api-stock/pkg/utils"
+	"appGestion/pkg/utils"
 	"database/sql"
 	"log"
 	"os"
@@ -92,8 +92,8 @@ func CreateAdmin(db *sql.DB) error {
 		log.Fatalf("Error al crear admin, hash_pass: %v", err)
 	}
 
-	query = `INSERT INTO users (id, first_name, last_name, email, identifier, phone, address, city, country, zip_code, password) values (?,?,?,?,?,?,?,?,?,?,?);`
-	args = append(args, []interface{}{&userId, &firstNameAdmin, &lastNameAdmin, &emailAdmin, &identifierAdmin, &phoneAdmin, &addressAdmin, &cityAdmin, &countryAdmin, &zipCodeAdmin, &hashPassword})
+	query = `INSERT INTO users (id, first_name, last_name, email, identifier, phone, address, city, country, zip_code, password, is_admin) values (?,?,?,?,?,?,?,?,?,?,?,?);`
+	args = append(args, []interface{}{&userId, &firstNameAdmin, &lastNameAdmin, &emailAdmin, &identifierAdmin, &phoneAdmin, &addressAdmin, &cityAdmin, &countryAdmin, &zipCodeAdmin, &hashPassword, true})
 	queries = append(queries, query)
 
 	query = `INSERT INTO entities (id, email, cuit, name, phone, start_activities, address, city, country, zip_code) values (?,?,?,?,?,?,?,?,?,?);`

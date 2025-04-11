@@ -1,16 +1,19 @@
 package ports
 
-import(
-	ent "api-stock/pkg/models/entity"
+import (
+	"appGestion/pkg/models/entity"
 )
 
 type EntityService interface {
-	Create(entity *ent.EntityCreate) (id string, err error)
-	Update(entity *ent.EntityUpdate) (err error)
+	Create(entity *entity.EntityCreate) (id string, err error)
+	GetAll() (entities *[]entity.Entity, err error)
+	Update(entity *entity.EntityUpdate) (err error)
 }
 
 type EntityRepository interface {
-	Insert(entity *ent.EntityCreate) (id string, err error)
-	Update(entity *ent.EntityUpdate) (err error)
-	Exist(id string) (exist bool, err error)
+	Insert(entity *entity.EntityCreate) (id string, err error)
+	Update(entity *entity.EntityUpdate) (err error)
+	ExistById(id string) (exist bool, err error)
+	ExistByCUIT(cuit string) (exist bool, err error)
+	GetAll() (entities *[]entity.Entity, err error)
 }

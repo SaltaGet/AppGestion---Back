@@ -1,14 +1,32 @@
 package user
 
 import (
-	"api-stock/pkg/models/user"
-	"api-stock/pkg/repository/database"
-	"api-stock/pkg/utils"
+	"appGestion/pkg/models/user"
+	"appGestion/pkg/repository/database"
+	"appGestion/pkg/utils"
+
+	"github.com/google/uuid"
 )
 
-// func (r *Repository) Insert(user *user.UserCreate) (string, error) {
-// 	return "", nil	
-// }
+func (r *Repository) Create(user *user.UserCreate) (string, error) {
+	
+	query := `INSERT INTO users(id, first_name, last_name, email, identifier, phone, address, city, country, zip_code, password)
+						values (?,?,?,?,?,?,?,?,?,?,?)`
+	newId := uuid.NewString()
+	hashPassword, err := utils.HashPassword(user.Password)
+
+	if err != nil {
+		return "", err
+	}
+
+	err = database.ExecuteTransaction(r.DB, query, newId, user.FirstName, user.LastName, user.Email, user.Identifier, user.Phone, user.Address, user.City, user.Country, user.ZipCode, hashPassword)
+
+	if err != nil {
+		return "", err
+	}
+
+	return newId, nil	
+}
 
 // func (r *Repository) Update(user *user.UserUpdate) (error) {
 // 	return nil	
@@ -74,4 +92,17 @@ func (r *Repository) GetByEmail(email string) (*user.User, error) {
 	}
 
 	return &user[0], nil
+}
+
+func (r *Repository) ExistUser(identifier string, email string) (bool, error) {
+	query := `SELECT EXISTS(SELECT 1 FROM users WHERE identifier = ? OR email = ?)`
+
+	row := database.GetRow(r.DB, query, identifier, email)
+
+	var exist bool
+	if err := row.Scan(&exist); err != nil {
+		return false, err
+	}
+
+	return exist, nil
 }

@@ -101,3 +101,5 @@ func (ctrl Controller) GetAll(c *fiber.Ctx) error {
 		Message: "Entidades obtenidas con éxito",
 	})
 }
+
+// //	@Param			X-Tenant	header		string				true	"Tenant Token"

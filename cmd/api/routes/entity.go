@@ -9,9 +9,9 @@ import (
 
 func EntitiesRoutes(app *fiber.App, ctrl *entCtrl.Controller) {
 	entities := app.Group("/entities")
-	entities.Get("/", getClients)    
-	entities.Get("/get_all", middleware.RequireAuth(true), ctrl.GetAll)
-	entities.Post("/create", middleware.RequireAuth(true), ctrl.CreateEntity) 
+	entities.Get("/:id", getClients)    
+	entities.Get("/get_all", middleware.JWTAauth(true), ctrl.GetAll)
+	entities.Post("/create", middleware.JWTAauth(true), ctrl.CreateEntity) 
 }
 
 func getClients(c *fiber.Ctx) error       { return c.SendString("Lista de usuarios") }

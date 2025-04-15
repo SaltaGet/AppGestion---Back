@@ -11,74 +11,140 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func RequireAuth(isAdmin ...bool) fiber.Handler {
+
+func JWTAauth(isAdmin ...bool) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		return JWTAauth(c, isAdmin...)
-	}
-}
-
-func JWTAauth(c *fiber.Ctx, isAdmin ...bool) error {
-	token := c.Get("Authorization")
-	if token == "" {
-		return c.Status(401).JSON(models.Response{
-			Status:  false,
-			Message: "Token no encontrado",
-		})
-	}
-
-	tenantDB, err := database.GetTenantDB("default")
-	if err != nil {
-		return c.Status(500).JSON(models.Response{
-			Status:  false,
-			Message: "Error de conexión al tenant",
-		})
-	}
-
-	ctx := c.UserContext()
-	deps := ctx.Value(key.AppKey).(*dependencies.Application)
-	deps.SetDBRepository(tenantDB)
-
-	claims, err := utils.VerifyToken(token)
-		if err != nil {
+		token := c.Get("Authorization")
+		if token == "" {
 			return c.Status(401).JSON(models.Response{
 				Status:  false,
-				Message: "Token inválido",
+				Message: "Token no encontrado",
 			})
 		}
 	
-	userId := claims.(jwt.MapClaims)["id"].(string)
-
-	user, err := deps.AuthController.AuthService.GetCurrentUser(userId)
-
-	if err != nil {
-		return c.Status(500).JSON(models.Response{
-			Status:  false,
-			Message: "Error de conexión al tenant",
-		})
+		tenantDB, err := database.GetTenantDB("default")
+		if err != nil {
+			return c.Status(500).JSON(models.Response{
+				Status:  false,
+				Message: "Error de conexión al tenant",
+			})
+		}
+	
+		ctx := c.UserContext()
+		deps := ctx.Value(key.AppKey).(*dependencies.Application)
+		deps.SetDBRepository(tenantDB)
+	
+		claims, err := utils.VerifyToken(token)
+			if err != nil {
+				return c.Status(401).JSON(models.Response{
+					Status:  false,
+					Message: "Token inválido",
+				})
+			}
+		
+		userId := claims.(jwt.MapClaims)["id"].(string)
+	
+		user, err := deps.AuthController.AuthService.GetCurrentUser(userId)
+	
+		if err != nil {
+			return c.Status(500).JSON(models.Response{
+				Status:  false,
+				Message: "Error de conexión al tenant",
+			})
+		}
+	
+		if user == nil {
+			return c.Status(500).JSON(models.Response{
+				Status:  false,
+				Message: "Error de conexión al tenant",
+			})
+		}
+	
+		requireAdmin := false
+		if len(isAdmin) > 0 {
+			requireAdmin = isAdmin[0]
+		}
+	
+		if requireAdmin && !user.IsAdmin {
+			return c.Status(403).JSON(models.Response{
+				Status:  false,
+				Message: "Acceso solo para administradores",
+			})
+		}
+	
+		c.Locals("user", user)
+		return c.Next()
 	}
-
-	if user == nil {
-		return c.Status(500).JSON(models.Response{
-			Status:  false,
-			Message: "Error de conexión al tenant",
-		})
-	}
-
-	requireAdmin := false
-	if len(isAdmin) > 0 {
-		requireAdmin = isAdmin[0]
-	}
-
-	if requireAdmin && !user.IsAdmin {
-		return c.Status(403).JSON(models.Response{
-			Status:  false,
-			Message: "Acceso solo para administradores",
-		})
-	}
-
-	c.Locals("user", user)
-	return c.Next()
 }
+
+// func RequireAuth(isAdmin ...bool) fiber.Handler {
+// 	return func(c *fiber.Ctx) error {
+// 		return JWTAauth(c, isAdmin...)
+// 	}
+// }
+
+// func JWTAauth(c *fiber.Ctx, isAdmin ...bool) error {
+// 	token := c.Get("Authorization")
+// 	if token == "" {
+// 		return c.Status(401).JSON(models.Response{
+// 			Status:  false,
+// 			Message: "Token no encontrado",
+// 		})
+// 	}
+
+// 	tenantDB, err := database.GetTenantDB("default")
+// 	if err != nil {
+// 		return c.Status(500).JSON(models.Response{
+// 			Status:  false,
+// 			Message: "Error de conexión al tenant",
+// 		})
+// 	}
+
+// 	ctx := c.UserContext()
+// 	deps := ctx.Value(key.AppKey).(*dependencies.Application)
+// 	deps.SetDBRepository(tenantDB)
+
+// 	claims, err := utils.VerifyToken(token)
+// 		if err != nil {
+// 			return c.Status(401).JSON(models.Response{
+// 				Status:  false,
+// 				Message: "Token inválido",
+// 			})
+// 		}
+	
+// 	userId := claims.(jwt.MapClaims)["id"].(string)
+
+// 	user, err := deps.AuthController.AuthService.GetCurrentUser(userId)
+
+// 	if err != nil {
+// 		return c.Status(500).JSON(models.Response{
+// 			Status:  false,
+// 			Message: "Error de conexión al tenant",
+// 		})
+// 	}
+
+// 	if user == nil {
+// 		return c.Status(500).JSON(models.Response{
+// 			Status:  false,
+// 			Message: "Error de conexión al tenant",
+// 		})
+// 	}
+
+// 	requireAdmin := false
+// 	if len(isAdmin) > 0 {
+// 		requireAdmin = isAdmin[0]
+// 	}
+
+// 	if requireAdmin && !user.IsAdmin {
+// 		return c.Status(403).JSON(models.Response{
+// 			Status:  false,
+// 			Message: "Acceso solo para administradores",
+// 		})
+// 	}
+
+// 	c.Locals("user", user)
+// 	return c.Next()
+// }
 
 // func AuthTenantMiddleware(deps *dependencies.Application) fiber.Handler {
 // 	return func(c *fiber.Ctx) error {

@@ -298,35 +298,8 @@ paths:
                     $ref: '#/definitions/entity.Entity'
                   type: array
               type: object
-        "400":
-          description: Bad Request
-          schema:
-            allOf:
-            - $ref: '#/definitions/models.Response'
-            - properties:
-                body:
-                  type: object
-              type: object
         "401":
           description: Unauthorized
-          schema:
-            allOf:
-            - $ref: '#/definitions/models.Response'
-            - properties:
-                body:
-                  type: object
-              type: object
-        "404":
-          description: Not Found
-          schema:
-            allOf:
-            - $ref: '#/definitions/models.Response'
-            - properties:
-                body:
-                  type: object
-              type: object
-        "422":
-          description: Unprocessable Entity
           schema:
             allOf:
             - $ref: '#/definitions/models.Response'
@@ -392,6 +365,43 @@ paths:
       summary: Establishment create
       tags:
       - Establishment
+  /establishments/get_all_admin:
+    get:
+      consumes:
+      - application/json
+      description: Establishments get
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      security:
+      - BearerAuth: []
+      summary: Establishments get
+      tags:
+      - EstablishmentAdmin
   /users/create:
     post:
       consumes:

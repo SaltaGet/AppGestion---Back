@@ -9,10 +9,6 @@ import (
 
 func EntablishmentsRoutes(app *fiber.App, ctrl *establishment.Controller) {
 	establishments := app.Group("/establishments")
-	establishments.Get("/", getEntablishments)       // GET /users
-	establishments.Get("/:id", getEntablishmentById) // GET /users/:id
-	establishments.Post("/create", middleware.RequireAuth(true), ctrl.Create)    // POST /users
+	establishments.Post("/create", middleware.JWTAauth(true), ctrl.Create)  
+	establishments.Get("/get_all_admin", middleware.JWTAauth(true), ctrl.GetAllAdmin) 
 }
-
-func getEntablishments(c *fiber.Ctx) error       { return c.SendString("Lista de usuarios") }
-func getEntablishmentById(c *fiber.Ctx) error    { return c.SendString("Usuario ID: " + c.Params("id")) }

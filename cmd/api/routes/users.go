@@ -9,5 +9,5 @@ import (
 
 func UserRoutes(app *fiber.App, ctrl *user.Controller) {
 	users := app.Group("/users")
-	users.Post("/create", middleware.RequireAuth(true), ctrl.Create) 
+	users.Post("/create", middleware.JWTAauth(true), ctrl.Create) 
 }

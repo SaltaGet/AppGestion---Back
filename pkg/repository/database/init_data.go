@@ -15,12 +15,12 @@ func CreateRoles(db *sql.DB) error {
 	args := [][]interface{}{}
 
 	initRoles := map[string]int{
-		"ADMIN":           999,
-		"GENERAL_MANAGER": 800,
-		"SUPERVISOR":      600,
-		"MANAGEMENT":      400,
-		"SPECIAL":         200,
-		"EMPLOYEE":        100,
+		"ADMIN":           9,
+		"GENERAL_MANAGER": 8,
+		"SUPERVISOR":      6,
+		"MANAGEMENT":      4,
+		"SPECIAL":         2,
+		"EMPLOYEE":        1,
 	}
 
 	for role, hierarchy := range initRoles {

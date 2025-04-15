@@ -3,6 +3,8 @@ package establishment
 import (
 	"appGestion/pkg/models/establishment"
 	"appGestion/pkg/repository/database"
+	"appGestion/pkg/utils"
+
 	"github.com/google/uuid"
 )
 
@@ -36,3 +38,22 @@ func (r *Repository) GetEstablishmentById(establishmentId string, userId string)
 
 	return connection, nil
 }
+
+func (r *Repository) GetAllAdmin() (*[]establishment.Establishment, error) {
+	query := `SELECT *FROM establishments`
+
+	var establishments []establishment.Establishment
+	rows, err := database.GetRows(r.DB, query)
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = utils.MapRowsToStruct(rows, &establishments)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &establishments, nil
+}	

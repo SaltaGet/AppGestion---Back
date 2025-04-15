@@ -53,6 +53,7 @@ func strongPasswordValidator(fl validator.FieldLevel) bool {
 	return hasUpper && hasLower && hasNumber && hasSymbol
 }
 
+
 func (c *UserCreate) Validate() error {
 	validate := validator.New()
 	validate.RegisterValidation("strongpassword", strongPasswordValidator)

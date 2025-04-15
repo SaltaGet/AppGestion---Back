@@ -28,18 +28,18 @@ func PrepareDB(uri string) error {
 
 	// Crear las tablas por defecto
 	createTables := `
-		CREATE TABLE IF NOT EXISTS Buy (
+		CREATE TABLE IF NOT EXISTS buy (
 				id TEXT PRIMARY KEY,
 				date DATETIME NOT NULL,
 				data TEXT NOT NULL CHECK (length(data) <= 1000000)
 		);
 
-		CREATE TABLE IF NOT EXISTS Category (
+		CREATE TABLE IF NOT EXISTS category (
 				id TEXT PRIMARY KEY,
 				name TEXT NOT NULL
 		);
 
-		CREATE TABLE IF NOT EXISTS DailyMovement (
+		CREATE TABLE IF NOT EXISTS daily_movement (
 				id TEXT PRIMARY KEY,
 				product_id TEXT NOT NULL,
 				created_at DATETIME NOT NULL,
@@ -50,7 +50,7 @@ func PrepareDB(uri string) error {
 				FOREIGN KEY (product_id) REFERENCES Product(id)
 		);
 
-		CREATE TABLE IF NOT EXISTS Product (
+		CREATE TABLE IF NOT EXISTS product (
 				id TEXT PRIMARY KEY,
 				sku TEXT NOT NULL,
 				name TEXT NOT NULL,
@@ -65,28 +65,34 @@ func PrepareDB(uri string) error {
 				FOREIGN KEY (category_id) REFERENCES Category(id)
 		);
 
-		CREATE TABLE IF NOT EXISTS ProductPriceHistory (
+		CREATE TABLE IF NOT EXISTS product_price_history (
 				id TEXT PRIMARY KEY,
 				data TEXT NOT NULL CHECK (length(data) <= 1000000)
 		);
 
-		CREATE TABLE IF NOT EXISTS Sale (
-				id TEXT PRIMARY KEY,
-				date DATETIME NOT NULL,
-				data TEXT NOT NULL CHECK (length(data) <= 1000000)
-		);
-
-		CREATE TABLE IF NOT EXISTS Discontinued (
+		CREATE TABLE IF NOT EXISTS sale (
 				id TEXT PRIMARY KEY,
 				date DATETIME NOT NULL,
 				data TEXT NOT NULL CHECK (length(data) <= 1000000)
 		);
 
-		CREATE TABLE IF NOT EXISTS Stock (
+		CREATE TABLE IF NOT EXISTS discontinued (
+				id TEXT PRIMARY KEY,
+				date DATETIME NOT NULL,
+				data TEXT NOT NULL CHECK (length(data) <= 1000000)
+		);
+
+		CREATE TABLE IF NOT EXISTS stock (
 				id TEXT PRIMARY KEY,
 				product_id TEXT NOT NULL,
 				stock REAL NOT NULL,
 				FOREIGN KEY (product_id) REFERENCES Product(id)
+		);
+
+		CREATE TABLE IF NOT EXISTS roles (
+				id TEXT PRIMARY KEY,
+				date DATETIME NOT NULL,
+				data TEXT NOT NULL CHECK (length(data) <= 1000000)
 		);
 	`
 
@@ -98,12 +104,12 @@ func PrepareDB(uri string) error {
 	}
 
 	// Insertar datos por defecto
-	_, err = tx.Exec(`INSERT OR IGNORE INTO roles (name) VALUES ('admin'), ('user')`)
-	if err != nil {
-		tx.Rollback()
-		_ = os.Remove(uri)
-		return fmt.Errorf("error al insertar datos por defecto: %w", err)
-	}
+	// _, err = tx.Exec(`INSERT OR IGNORE INTO roles (name) VALUES ('admin')`)
+	// if err != nil {
+	// 	tx.Rollback()
+	// 	_ = os.Remove(uri)
+	// 	return fmt.Errorf("error al insertar datos por defecto: %w", err)
+	// }
 
 	// Confirmar cambios
 	if err = tx.Commit(); err != nil {

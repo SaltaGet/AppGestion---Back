@@ -156,7 +156,7 @@ func CreatePrincipalTables(db *sql.DB) {
   CREATE TABLE IF NOT EXISTS roles (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL UNIQUE CHECK (LENGTH(name) <= 50),
-      hierarchy INTEGER UNIQUE CHECK (hierarchy < 1000),
+      hierarchy INTEGER UNIQUE CHECK (hierarchy < 10),
       created DATETIME NOT NULL DEFAULT (datetime('now')),
       updated DATETIME NOT NULL DEFAULT (datetime('now'))
   );
